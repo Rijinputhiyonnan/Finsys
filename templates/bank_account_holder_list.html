@@ -1,0 +1,26 @@
+{% extends 'app1/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container">
+    <h2>Bank Account Holders</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Alias</th>
+                <th>Account Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bank_account_holder in bank_account_holders %}
+                <tr>
+                    <td>{{ bank_account_holder.name }}</td>
+                    <td>{{ bank_account_holder.alias }}</td>
+                    <td>{{ bank_account_holder.get_account_type_display }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

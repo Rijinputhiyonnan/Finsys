@@ -132,6 +132,6 @@ class BankAccountHolderForm(forms.Form):
     set_alter_gst_details = forms.ChoiceField(choices=[('yes', 'Yes'), ('no', 'No')], widget=forms.RadioSelect, required=False)
 
     # OpeningBalance fields
-    date = forms.DateField()
+    date = forms.DateField(input_formats=['%d %m %Y'])
     amount = forms.DecimalField(max_digits=10, decimal_places=2)
 
