@@ -2,25 +2,261 @@
 {% load static %}
 
 {% block body %}
+<style>
+    @import url(https://fonts.googleapis.com/css?family=Open+Sans);
+
+body{
+background: #f2f2f2;
+font-family: 'Open Sans', sans-serif;
+}
+
+.search {
+width: 100%;
+position: relative;
+display: flex;
+}
+
+.searchTerm {
+width: 100%;
+border: 3px solid #7690da;
+border-right: none;
+padding: 5px;
+height: 36px;
+border-radius: 5px 0 0 5px;
+outline: none;
+color: #9DBFAF;
+}
+
+.searchTerm:focus{
+color:#7690da;
+}
+
+.searchButton {
+width: 40px;
+height: 36px;
+border: 1px solid #7690da;
+background:#7690da;
+text-align: center;
+color: #fff;
+border-radius: 0 5px 5px 0;
+cursor: pointer;
+font-size: 20px;
+}
+
+/*Resize the wrap to see the search bar change!*/
+.wrap{
+width: 40%;
+/* position: absolute;
+top: 50%;
+left: 50%; */
+/* transform: translate(-50%, -50%); */
+}
+.table-row{
+    cursor:pointer;
+}
+
+
+
+  </style>
+    <div class="page-content">
+        <div class="card radius-15">
+            <div class="card-body">
+                <div class="card-title">
+                    <center><h2 class="mb-0">Bank Account Holders</h2></center>
+                    <hr>
+                    <div class="btn-group col-md-2" style="float: right;">
+                        
+                            <a class="btn btn-outline-info text-grey" onclick="ExportToExcel('xlsx')">Export To Excel</a>
+                        </div>
+
+                        
+                       
+                </div>
+            </div>
+        </div>
+        <div class="card radius-15">
+            <div class="card-body">
+                <div class="row">
+
+                    
+                    <!-- <div class="col-md-4">
+                        <div class="wrap" style="width: 60%; margin-top: 8px;">
+                           
+                            <div class="search">
+                                
+                               <input type="text" id="searchfild" class="searchTerm" name="search">
+                               <button type="submit" class="searchButton">
+                                 <i class="fa fa-search"></i>
+                              </button>
+                            </div>
+                            
+                          
+                         </div>
+                         
+                    </div> -->
+                    
+                    <div class="col-md-4">
+                        <div class="wrap" style="width: 60%; margin-top: 8px;">
+                            <form action="{% url 'gosearch' %}" method="POST">{% csrf_token %}
+                            <div class="search">
+                                
+                               <input type="text" class="searchTerm" name="search">
+                               <button type="submit" class="searchButton">
+                                 <i class="fa fa-search"></i>
+                              </button>
+                            </div>
+                            
+                          
+                         </div>
+                         
+                    </div>
+                    <div class="col-md-4">
+                      
+                        <select class="form-control btn btn-outline-info dropdown-toggle text-grey" aria-label=".form-select-lg example" style="width: 40%; margin-top: 8px;" name="type">
+                            
+                            <option value="1" selected>All</option>
+                            <option value="2" >Name</option>
+                            <option value="3" >Active</option>
+                            <option value="4" >Inactive</option>
+                            
+                            
+                          </select>
+
+                          
+
+
+                        </form>
+                        </div>
+                        <div class="col-md-2" style="width: 40%; margin-top: 8px;">
+
+                            <div class="dropdown">
+                                <button type="button" class="btn btn-outline-info dropdown-toggle text-grey"
+                                        data-toggle="dropdown">filter by
+                                </button>
+                                <div class="dropdown-menu" style="background-color: black;">
+                                    <a class="dropdown-item" href="{% url 'gocustomers' %}"
+                                       style="height: 40px; font-size: 15px; color: white; text-align: center;" >All</a>
+                                    <a class="dropdown-item" href="{% url 'gocustomers1' %}"
+                                       style="height: 40px; font-size: 15px; color: white; text-align: center;" >Active</a>
+                                    <a class="dropdown-item" href="{% url 'gocustomers2' %}"
+                                       style="height: 40px; font-size: 15px; color: white; text-align: center;">Inactive</a>
+                                    
+                                    
+                            </div> 
+                          </div>
+                        </div>
+                        
+                        
+
+                        
+                   
+
+                    <!-- <div class="col-md-2">
+                        <a href="{% url 'goaddcust' %}" >
+                            <button >Add Customer</button>
+                        </a>
+                    </div> -->
+
+                    <div class="btn-group col-md-2">
+                        <a href="{% url 'bank_account_holder_create' %}" id="myBtn" class="btn btn-outline-info text-grey" style="margin-top: 8px;" role="button">New</a>
+                        
+                    </div>
+
 <div class="container">
-    <h2>Bank Account Holders</h2>
+    <h2></h2>
     <table class="table">
         <thead>
             <tr>
                 <th>Name</th>
                 <th>Alias</th>
                 <th>Account Type</th>
+                <!-- Add additional columns here -->
+                <th>Holder Name</th>
+                <th>Account Number</th>
+                <th>IFSC Code</th>
+                <!-- ... -->
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
             {% for bank_account_holder in bank_account_holders %}
-                <tr>
-                    <td>{{ bank_account_holder.name }}</td>
-                    <td>{{ bank_account_holder.alias }}</td>
-                    <td>{{ bank_account_holder.get_account_type_display }}</td>
-                </tr>
+            {% with bank_account=bank_accounts_map.bank_account_holder.pk %}
+            {% with bank_configuration=bank_configurations_map.bank_account_holder.pk %}
+                {% with mailing_address=mailing_addresses_map.bank_account_holder.pk %}
+                    {% with banking_detail=banking_details_map.bank_account_holder.pk %}
+                        {% with opening_balance=opening_balances_map.bank_account_holder.pk %}
+                            <tr>
+                                        <td>{{ bank_account_holder.name }}</td>
+                                        <td>{{ bank_account_holder.alias }}</td>
+                                        <td>{{ bank_account_holder.get_account_type_display }}</td>
+                                        <!-- Add additional data here -->
+                                        <td>{{ bank_account.holder_name }}</td>
+                                        <td>{{ bank_account.account_number }}</td>
+                                        <td>{{ bank_account.ifsc_code }}</td>
+                                        <!-- ... -->
+                                        <!-- Action column -->
+                                        <td><button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#viewModal-{{ bank_account_holder.pk }}">View</button></td>
+                                    </tr>
+
+                                    <!-- View modal -->
+                                    <div class="modal fade" id="viewModal-{{ bank_account_holder.pk }}" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel-{{ bank_account_holder.pk }}" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="viewModalLabel-{{ bank_account_holder.pk }}">Bank Account Holder Details</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <!-- Display all the details here -->
+                                                    <h6>Bank Account Holder</h6>
+                                                    <p><strong>Name:</strong> {{ bank_account_holder.name }}</p>
+                                                    <p><strong>Alias:</strong> {{ bank_account_holder.alias }}</p>
+                                                    <p><strong>Account Type:</strong> {{ bank_account_holder.get_account_type_display }}</p>
+                                                    <!-- ... -->
+                                                    <h6>Bank Account</h6>
+                                                    <p><strong>Holder Name:</strong> {{ bank_account.holder_name }}</p>
+                                                    <p><strong>Account Number:</strong> {{ bank_account.account_number }}</p>
+                                                    <p><strong>IFSC Code:</strong> {{ bank_account.ifsc_code }}</p>
+                                                    <!-- ... -->
+                                                    <h6>Bank Configuration</h6>
+                                                    <p><strong>Cheque Book Range:</strong> {{ bank_configuration.cheque_book_range }}</p>
+                                                    <p><strong>Cheque Printing:</strong> {{ bank_configuration.cheque_printing }}</p>
+                                                    <!-- ... -->
+                                                    <h6>Mailing Address</h6>
+                                                    <p><strong>Name:</strong> {{ mailing_address.name }}</p>
+                                                    <p><strong>Address:</strong> {{ mailing_address.address }}</p>
+                                                    <!-- ... -->
+                                                    <h6>Banking Details</h6>
+                                                    <p><strong>PAN/IT Number:</strong> {{ banking_detail.pan_it_number }}</p>
+                                                    <!-- ... -->
+                                                    <h6>Opening Balance</h6>
+                                                    <p><strong>Date:</strong> {{ opening_balance.date }}</p>
+                                                    <p><strong>Amount:</strong> {{ opening_balance.amount }}</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <!-- Edit button -->
+                                                    <a href="{% url 'edit' pk=bank_account_holder.pk %}" class="btn btn-outline-secondary">Edit</a>
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                {% endwith %}
+                            {% endwith %}
+                        {% endwith %}
+                    {% endwith %}
+                {% endwith %}
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<!-- Include Bootstrap JS and dependencies (required for modals) -->
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/popper.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+
 {% endblock %}

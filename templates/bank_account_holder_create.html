@@ -3,7 +3,7 @@
 
 {% block body %}
 <div class="container">
-    <form method="post">
+    <form method="post" action="{% url 'bank_account_holder_create' %}">
         {% csrf_token %}
         <h2>Bank Holders</h2>
         <div class="row">

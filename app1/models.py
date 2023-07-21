@@ -1757,6 +1757,7 @@ class BankAccountHolder(models.Model):
     
 
 class BankAccount(models.Model):
+    
     holder_name = models.CharField(max_length=100)
     account_number = models.CharField(max_length=20)
     ifsc_code = models.CharField(max_length=11)

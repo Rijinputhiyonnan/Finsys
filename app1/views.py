@@ -6,7 +6,7 @@ from django.db.models import Avg,Max,Min,Sum
 import os
 from django.conf import settings
 from django.core.mail import send_mail
-from django.shortcuts import render, redirect,HttpResponse
+from django.shortcuts import render, redirect,HttpResponse, get_object_or_404
 from datetime import datetime, date, timedelta
 from .models import advancepayment, paydowncreditcard, salesrecpts, timeact, timeactsale, Cheqs, suplrcredit, addac, \
     bills, invoice, expences, payment, credit, delayedcharge, estimate, service, noninventory, bundle, employee, \
@@ -38142,6 +38142,7 @@ def recurexpense_vendor(request):
             return HttpResponse({"message": "success"})
 
 
+
 @login_required(login_url='regcomp')
 def recurexpense_account(request):
     if 'uid' in request.session:
@@ -38277,22 +38278,56 @@ def account_dropdown(request):
         return JsonResponse(options)
 
 
-from django.shortcuts import render, redirect
 from .forms import BankAccountHolderForm
+
 
 def bank_account_holder_create(request):
     if request.method == 'POST':
         form = BankAccountHolderForm(request.POST)
         if form.is_valid():
+            print("Form saved successfully")
             form.save()
+            print("Form saved successfully")
             return redirect('bank_account_holder_list')
+        else:
+            print("Form is not valid")
+            print(form.errors)
     else:
         form = BankAccountHolderForm()
     return render(request, 'bank_account_holder_create.html', {'form': form})
-
 def bank_account_holder_list(request):
     bank_account_holders = BankAccountHolder.objects.all()
-    return render(request, 'bank_account_holder_list.html', {'bank_account_holders': bank_account_holders})
+    holder_names = [bank_account_holder.name for bank_account_holder in bank_account_holders]
+    bank_accounts = BankAccount.objects.filter(holder_name__in=holder_names)
+    bank_configurations = BankConfiguration.objects.all()
+    mailing_addresses = MailingAddress.objects.all()
+    banking_details = BankingDetails.objects.all()
+    opening_balances = OpeningBalance.objects.all()
+    bank_accounts_map = {bank_account.holder_name: bank_account for bank_account in bank_accounts}
+    context = {
+        'bank_account_holders': bank_account_holders,
+        'bank_accounts_map': bank_accounts_map,
+        'bank_configurations': bank_configurations,
+        'mailing_addresses': mailing_addresses,
+        'banking_details': banking_details,
+        'opening_balances': opening_balances,
+    }
+    return render(request, 'bank_account_holder_list.html', context)
 
+
+
+
+
+
+def edit(request, pk):
+    bank_account_holder = get_object_or_404(BankAccountHolder, pk=pk)
+    if request.method == 'POST':
+        form = BankAccountHolderForm(request.POST, instance=bank_account_holder)
+        if form.is_valid():
+            form.save()
+            return redirect('bank_account_holder_list')
+    else:
+        form = BankAccountHolderForm(instance=bank_account_holder)
+    return render(request, 'bank_account_holder_list.html', {'form': form})
 
 
