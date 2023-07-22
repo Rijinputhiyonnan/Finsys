@@ -38318,16 +38318,23 @@ def bank_account_holder_list(request):
 
 
 
+from django.shortcuts import render, redirect
+from django.forms import ModelForm
+from app1.models import BankAccountHolder
+
+class BankAccountHolderForm(ModelForm):
+    class Meta:
+        model = BankAccountHolder
+        fields = '__all__'
 
 def edit(request, pk):
     bank_account_holder = get_object_or_404(BankAccountHolder, pk=pk)
+    form = BankAccountHolderForm(request.POST or None, instance=bank_account_holder)
     if request.method == 'POST':
-        form = BankAccountHolderForm(request.POST, instance=bank_account_holder)
         if form.is_valid():
             form.save()
             return redirect('bank_account_holder_list')
-    else:
-        form = BankAccountHolderForm(instance=bank_account_holder)
-    return render(request, 'bank_account_holder_list.html', {'form': form})
+    return render(request, 'bank_account_holder_edit.html', {'form': form})
+
 
 

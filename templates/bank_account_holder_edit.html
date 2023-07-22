@@ -1,0 +1,38 @@
+{% extends 'app1/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container">
+    <form method="post" >
+        {% csrf_token %}
+        <h2>Edit Bank Account Holder</h2>
+        <div class="row">
+            <div class="col-md-6">
+                {% for field in form %}
+                    {% if forloop.counter|divisibleby:2 == 0 %}
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">{{ field.label }}</label>
+                            <div class="col-sm-8">
+                                {{ field }}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="col-md-6">
+                {% for field in form %}
+                    {% if forloop.counter|divisibleby:2 == 1 %}
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">{{ field.label }}</label>
+                            <div class="col-sm-8">
+                                {{ field }}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+</div>
+{% endblock %}
