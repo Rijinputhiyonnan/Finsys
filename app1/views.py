@@ -38278,23 +38278,44 @@ def account_dropdown(request):
         return JsonResponse(options)
 
 
-from .forms import BankAccountHolderForm
+from django.forms import ModelForm
+from django.forms.models import ModelFormMetaclass
+from .forms import BankAccountForm, MailingAddressForm, BankingDetailsForm, OpeningBalanceForm
 
+from .models import BankAccountHolder
 
 def bank_account_holder_create(request):
     if request.method == 'POST':
-        form = BankAccountHolderForm(request.POST)
-        if form.is_valid():
-            print("Form saved successfully")
-            form.save()
-            print("Form saved successfully")
-            return redirect('bank_account_holder_list')
-        else:
-            print("Form is not valid")
-            print(form.errors)
+        bank_account_holder_form = BankAccountHolderForm(request.POST)
+        bank_account_form = BankAccountForm(request.POST)
+        mailing_address_form = MailingAddressForm(request.POST)
+        banking_details_form = BankingDetailsForm(request.POST)
+        opening_balance_form = OpeningBalanceForm(request.POST)
+
+        if bank_account_holder_form.is_valid() and bank_account_form.is_valid() and mailing_address_form.is_valid() and banking_details_form.is_valid() and opening_balance_form.is_valid():
+            bank_account_holder_form.save()
+            bank_account_form.save()
+            mailing_address_form.save()
+            banking_details_form.save()
+            opening_balance_form.save()
+            return redirect('bank_account_holder_create')
     else:
-        form = BankAccountHolderForm()
-    return render(request, 'bank_account_holder_create.html', {'form': form})
+        bank_account_holder_form = BankAccountHolderForm()
+        bank_account_form = BankAccountForm()
+        mailing_address_form = MailingAddressForm()
+        banking_details_form = BankingDetailsForm()
+        opening_balance_form = OpeningBalanceForm()
+    return render(request, 'bank_account_holder_create.html', {
+        'bank_account_holder_form': bank_account_holder_form,
+        'bank_account_form': bank_account_form,
+        'mailing_address_form': mailing_address_form,
+        'banking_details_form': banking_details_form,
+        'opening_balance_form': opening_balance_form,
+    })
+
+
+
+
 def bank_account_holder_list(request):
     bank_account_holders = BankAccountHolder.objects.all()
     holder_names = [bank_account_holder.name for bank_account_holder in bank_account_holders]
