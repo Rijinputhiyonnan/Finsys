@@ -35,14 +35,17 @@ class EmailForm(forms.Form):
     #----------Rijin-----------------------------------------------------
 # forms.py
 from django import forms
-from .models import BankAccountHolder, BankAccount, MailingAddress, BankingDetails, OpeningBalance
-from django import forms
+
 from .models import BankAccountHolder, BankAccount, BankConfiguration, MailingAddress, BankingDetails, OpeningBalance
 
 class BankAccountHolderForm(forms.ModelForm):
     class Meta:
         model = BankAccountHolder
         fields = ['name', 'alias', 'account_type']
+        widgets = {
+            'account_type': forms.Select(attrs={'class': 'black-select'})
+        }
+
 
 class BankAccountForm(forms.ModelForm):
     class Meta:
@@ -50,6 +53,10 @@ class BankAccountForm(forms.ModelForm):
         fields = ['holder_name', 'account_number', 'ifsc_code', 'swift_code', 'bank_name', 'branch_name']
 
 class BankConfigurationForm(forms.ModelForm):
+    set_cheque_book_range = forms.ChoiceField(choices=[('yes', 'Yes'), ('no', 'No')], widget=forms.RadioSelect)
+    enable_cheque_printing = forms.ChoiceField(choices=[('yes', 'Yes'), ('no', 'No')], widget=forms.RadioSelect)
+    set_cheque_printing_configuration = forms.ChoiceField(choices=[('yes', 'Yes'), ('no', 'No')], widget=forms.RadioSelect)
+
     class Meta:
         model = BankConfiguration
         fields = ['set_cheque_book_range', 'enable_cheque_printing', 'set_cheque_printing_configuration']
@@ -60,6 +67,8 @@ class MailingAddressForm(forms.ModelForm):
         fields = ['name', 'address', 'country', 'state', 'pin']
 
 class BankingDetailsForm(forms.ModelForm):
+    set_alter_gst_details = forms.ChoiceField(choices=[('yes', 'Yes'), ('no', 'No')], widget=forms.RadioSelect)
+
     class Meta:
         model = BankingDetails
         fields = ['pan_it_number', 'registration_details', 'gstin_un', 'set_alter_gst_details']
@@ -68,6 +77,9 @@ class OpeningBalanceForm(forms.ModelForm):
     class Meta:
         model = OpeningBalance
         fields = ['date', 'amount']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'})
+        }
 
 
     def save(self):

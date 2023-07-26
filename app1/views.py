@@ -38278,40 +38278,52 @@ def account_dropdown(request):
         return JsonResponse(options)
 
 
-from django.forms import ModelForm
-from django.forms.models import ModelFormMetaclass
-from .forms import BankAccountForm, MailingAddressForm, BankingDetailsForm, OpeningBalanceForm
-
-from .models import BankAccountHolder
+from django.shortcuts import render, redirect
+from .forms import BankAccountHolderForm, BankAccountForm, BankConfigurationForm, MailingAddressForm, BankingDetailsForm, OpeningBalanceForm
 
 def bank_account_holder_create(request):
     if request.method == 'POST':
+        print('POST data:', request.POST)  # Debugging statement
         bank_account_holder_form = BankAccountHolderForm(request.POST)
         bank_account_form = BankAccountForm(request.POST)
+        bank_configuration_form = BankConfigurationForm(request.POST)
         mailing_address_form = MailingAddressForm(request.POST)
         banking_details_form = BankingDetailsForm(request.POST)
         opening_balance_form = OpeningBalanceForm(request.POST)
 
-        if bank_account_holder_form.is_valid() and bank_account_form.is_valid() and mailing_address_form.is_valid() and banking_details_form.is_valid() and opening_balance_form.is_valid():
-            bank_account_holder_form.save()
-            bank_account_form.save()
+        forms = [bank_account_holder_form, bank_account_form, bank_configuration_form, mailing_address_form, banking_details_form, opening_balance_form]
+        if all(form.is_valid() for form in forms):
+            print('All forms are valid')  # Debugging statement
+            bank_account_holder = bank_account_holder_form.save()
+            bank_account = bank_account_form.save(commit=False)
+            bank_account.holder = bank_account_holder
+            bank_account.save()
+            bank_configuration_form.save()
             mailing_address_form.save()
             banking_details_form.save()
             opening_balance_form.save()
-            return redirect('bank_account_holder_create')
+            return redirect('bank_account_holder_list')
+        else:
+            print('Some forms are invalid')  # Debugging statement
+            for form in forms:
+                print(f'Errors in {form.__class__.__name__}:', form.errors)  # Debugging statement
     else:
         bank_account_holder_form = BankAccountHolderForm()
         bank_account_form = BankAccountForm()
+        bank_configuration_form = BankConfigurationForm()
         mailing_address_form = MailingAddressForm()
         banking_details_form = BankingDetailsForm()
         opening_balance_form = OpeningBalanceForm()
-    return render(request, 'bank_account_holder_create.html', {
+
+    context = {
         'bank_account_holder_form': bank_account_holder_form,
         'bank_account_form': bank_account_form,
+        'bank_configuration_form': bank_configuration_form,
         'mailing_address_form': mailing_address_form,
         'banking_details_form': banking_details_form,
         'opening_balance_form': opening_balance_form,
-    })
+    }
+    return render(request, 'bank_account_holder_create.html', context)
 
 
 
