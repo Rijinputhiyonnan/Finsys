@@ -38278,42 +38278,39 @@ def account_dropdown(request):
         return JsonResponse(options)
 
 
-from django.shortcuts import render, redirect
-from .forms import BankAccountHolderForm, BankAccountForm, BankConfigurationForm, MailingAddressForm, BankingDetailsForm, OpeningBalanceForm
 
+from .forms import BankAccountHolderForm, BankAccountForm, BankConfigurationForm, MailingAddressForm, BankingDetailsForm, OpeningBalanceForm
 def bank_account_holder_create(request):
     if request.method == 'POST':
-        print('POST data:', request.POST)  # Debugging statement
-        bank_account_holder_form = BankAccountHolderForm(request.POST)
-        bank_account_form = BankAccountForm(request.POST)
-        bank_configuration_form = BankConfigurationForm(request.POST)
-        mailing_address_form = MailingAddressForm(request.POST)
-        banking_details_form = BankingDetailsForm(request.POST)
-        opening_balance_form = OpeningBalanceForm(request.POST)
+        bank_account_holder_form = BankAccountHolderForm(request.POST, prefix='bank_account_holder')
+        bank_account_form = BankAccountForm(request.POST, prefix='bank_account')
+        bank_configuration_form = BankConfigurationForm(request.POST, prefix='bank_configuration')
+        mailing_address_form = MailingAddressForm(request.POST, prefix='mailing_address')
+        banking_details_form = BankingDetailsForm(request.POST, prefix='banking_details')
+        opening_balance_form = OpeningBalanceForm(request.POST, prefix='opening_balance')
 
-        forms = [bank_account_holder_form, bank_account_form, bank_configuration_form, mailing_address_form, banking_details_form, opening_balance_form]
-        if all(form.is_valid() for form in forms):
-            print('All forms are valid')  # Debugging statement
-            bank_account_holder = bank_account_holder_form.save()
-            bank_account = bank_account_form.save(commit=False)
-            bank_account.holder = bank_account_holder
-            bank_account.save()
+        if all([bank_account_holder_form.is_valid(), bank_account_form.is_valid(), bank_configuration_form.is_valid(), mailing_address_form.is_valid(), banking_details_form.is_valid(), opening_balance_form.is_valid()]):
+            bank_account_holder_form.save()
+            bank_account_form.save()
             bank_configuration_form.save()
             mailing_address_form.save()
             banking_details_form.save()
             opening_balance_form.save()
             return redirect('bank_account_holder_list')
         else:
-            print('Some forms are invalid')  # Debugging statement
-            for form in forms:
-                print(f'Errors in {form.__class__.__name__}:', form.errors)  # Debugging statement
+            print('BankAccountHolderForm errors:', bank_account_holder_form.errors)
+            print('BankAccountForm errors:', bank_account_form.errors)
+            print('BankConfigurationForm errors:', bank_configuration_form.errors)
+            print('MailingAddressForm errors:', mailing_address_form.errors)
+            print('BankingDetailsForm errors:', banking_details_form.errors)
+            print('OpeningBalanceForm errors:', opening_balance_form.errors)
     else:
-        bank_account_holder_form = BankAccountHolderForm()
-        bank_account_form = BankAccountForm()
-        bank_configuration_form = BankConfigurationForm()
-        mailing_address_form = MailingAddressForm()
-        banking_details_form = BankingDetailsForm()
-        opening_balance_form = OpeningBalanceForm()
+        bank_account_holder_form = BankAccountHolderForm(prefix='bank_account_holder')
+        bank_account_form = BankAccountForm(prefix='bank_account')
+        bank_configuration_form = BankConfigurationForm(prefix='bank_configuration')
+        mailing_address_form = MailingAddressForm(prefix='mailing_address')
+        banking_details_form = BankingDetailsForm(prefix='banking_details')
+        opening_balance_form = OpeningBalanceForm(prefix='opening_balance')
 
     context = {
         'bank_account_holder_form': bank_account_holder_form,
@@ -38324,7 +38321,6 @@ def bank_account_holder_create(request):
         'opening_balance_form': opening_balance_form,
     }
     return render(request, 'bank_account_holder_create.html', context)
-
 
 
 

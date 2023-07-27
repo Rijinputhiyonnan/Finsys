@@ -78,7 +78,7 @@ class OpeningBalanceForm(forms.ModelForm):
         model = OpeningBalance
         fields = ['date', 'amount']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'})
+            'date': forms.DateInput(attrs={'type': 'date', 'format': 'dd-mm-yyyy'})
         }
 
 
