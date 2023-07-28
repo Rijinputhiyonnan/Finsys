@@ -38281,6 +38281,8 @@ def account_dropdown(request):
 
 from .forms import BankAccountHolderForm, BankAccountForm, BankConfigurationForm, MailingAddressForm, BankingDetailsForm, OpeningBalanceForm
 def bank_account_holder_create(request):
+    print('View function called')
+
     if request.method == 'POST':
         bank_account_holder_form = BankAccountHolderForm(request.POST, prefix='bank_account_holder')
         bank_account_form = BankAccountForm(request.POST, prefix='bank_account')
@@ -38289,21 +38291,46 @@ def bank_account_holder_create(request):
         banking_details_form = BankingDetailsForm(request.POST, prefix='banking_details')
         opening_balance_form = OpeningBalanceForm(request.POST, prefix='opening_balance')
 
-        if all([bank_account_holder_form.is_valid(), bank_account_form.is_valid(), bank_configuration_form.is_valid(), mailing_address_form.is_valid(), banking_details_form.is_valid(), opening_balance_form.is_valid()]):
+        print('BankConfigurationForm errors:', bank_configuration_form.errors)
+        print('BankingDetailsForm errors:', banking_details_form.errors)
+
+        if bank_account_holder_form.is_valid():
             bank_account_holder_form.save()
-            bank_account_form.save()
-            bank_configuration_form.save()
-            mailing_address_form.save()
-            banking_details_form.save()
-            opening_balance_form.save()
-            return redirect('bank_account_holder_list')
+            messages.success(request, 'Bank account holder created successfully')
         else:
-            print('BankAccountHolderForm errors:', bank_account_holder_form.errors)
-            print('BankAccountForm errors:', bank_account_form.errors)
-            print('BankConfigurationForm errors:', bank_configuration_form.errors)
-            print('MailingAddressForm errors:', mailing_address_form.errors)
-            print('BankingDetailsForm errors:', banking_details_form.errors)
-            print('OpeningBalanceForm errors:', opening_balance_form.errors)
+            messages.error(request, 'Error creating bank account holder')
+
+        if bank_account_form.is_valid():
+            bank_account_form.save()
+            messages.success(request, 'Bank account created successfully')
+        else:
+            messages.error(request, 'Error creating bank account')
+
+        if bank_configuration_form.is_valid():
+            bank_configuration_form.save()
+            messages.success(request, 'Bank configuration saved successfully')
+        else:
+            messages.error(request, 'Error saving bank configuration')
+
+        if mailing_address_form.is_valid():
+            mailing_address_form.save()
+            messages.success(request, 'Mailing address saved successfully')
+        else:
+            messages.error(request, 'Error saving mailing address')
+
+        if banking_details_form.is_valid():
+            banking_details_form.save()
+            messages.success(request, 'Banking details saved successfully')
+        else:
+            messages.error(request, 'Error saving banking details')
+
+        if opening_balance_form.is_valid():
+            opening_balance_form.save()
+            messages.success(request, 'Opening balance saved successfully')
+        else:
+            messages.error(request, 'Error saving opening balance')
+
+        return redirect('bank_account_holder_list')
     else:
         bank_account_holder_form = BankAccountHolderForm(prefix='bank_account_holder')
         bank_account_form = BankAccountForm(prefix='bank_account')
@@ -38324,6 +38351,7 @@ def bank_account_holder_create(request):
 
 
 
+
 def bank_account_holder_list(request):
     bank_account_holders = BankAccountHolder.objects.all()
     holder_names = [bank_account_holder.name for bank_account_holder in bank_account_holders]
@@ -38333,6 +38361,7 @@ def bank_account_holder_list(request):
     banking_details = BankingDetails.objects.all()
     opening_balances = OpeningBalance.objects.all()
     bank_accounts_map = {bank_account.holder_name: bank_account for bank_account in bank_accounts}
+    # define additional maps here
     context = {
         'bank_account_holders': bank_account_holders,
         'bank_accounts_map': bank_accounts_map,
@@ -38340,8 +38369,10 @@ def bank_account_holder_list(request):
         'mailing_addresses': mailing_addresses,
         'banking_details': banking_details,
         'opening_balances': opening_balances,
+        # pass additional maps here
     }
     return render(request, 'bank_account_holder_list.html', context)
+
 
 
 

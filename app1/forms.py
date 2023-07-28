@@ -52,26 +52,12 @@ class BankAccountForm(forms.ModelForm):
         model = BankAccount
         fields = ['holder_name', 'account_number', 'ifsc_code', 'swift_code', 'bank_name', 'branch_name']
 
-class BankConfigurationForm(forms.ModelForm):
-    set_cheque_book_range = forms.ChoiceField(choices=[('yes', 'Yes'), ('no', 'No')], widget=forms.RadioSelect)
-    enable_cheque_printing = forms.ChoiceField(choices=[('yes', 'Yes'), ('no', 'No')], widget=forms.RadioSelect)
-    set_cheque_printing_configuration = forms.ChoiceField(choices=[('yes', 'Yes'), ('no', 'No')], widget=forms.RadioSelect)
-
-    class Meta:
-        model = BankConfiguration
-        fields = ['set_cheque_book_range', 'enable_cheque_printing', 'set_cheque_printing_configuration']
 
 class MailingAddressForm(forms.ModelForm):
     class Meta:
         model = MailingAddress
         fields = ['name', 'address', 'country', 'state', 'pin']
 
-class BankingDetailsForm(forms.ModelForm):
-    set_alter_gst_details = forms.ChoiceField(choices=[('yes', 'Yes'), ('no', 'No')], widget=forms.RadioSelect)
-
-    class Meta:
-        model = BankingDetails
-        fields = ['pan_it_number', 'registration_details', 'gstin_un', 'set_alter_gst_details']
 
 class OpeningBalanceForm(forms.ModelForm):
     class Meta:
@@ -80,61 +66,21 @@ class OpeningBalanceForm(forms.ModelForm):
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date', 'format': 'dd-mm-yyyy'})
         }
+class BankingDetailsForm(forms.ModelForm):
+    set_alter_gst_details = forms.ChoiceField(choices=[(True, 'Yes'), (False, 'No')], widget=forms.RadioSelect)
+
+    class Meta:
+        model = BankingDetails
+        fields = ['pan_it_number', 'registration_details', 'gstin_un', 'set_alter_gst_details']
+
+class BankConfigurationForm(forms.ModelForm):
+    set_cheque_book_range = forms.ChoiceField(choices=[(True, 'Yes'), (False, 'No')], widget=forms.RadioSelect)
+    enable_cheque_printing = forms.ChoiceField(choices=[(True, 'Yes'), (False, 'No')], widget=forms.RadioSelect)
+    set_cheque_printing_configuration = forms.ChoiceField(choices=[(True, 'Yes'), (False, 'No')], widget=forms.RadioSelect)
+
+    class Meta:
+        model = BankConfiguration
+        fields = ['set_cheque_book_range', 'enable_cheque_printing', 'set_cheque_printing_configuration']
 
 
-    def save(self):
-        # Get the cleaned data from the form
-        cleaned_data = self.cleaned_data
-
-        # Create a new BankAccountHolder object
-        bank_account_holder = BankAccountHolder(
-            name=cleaned_data['name'],
-            alias=cleaned_data['alias'],
-            account_type=cleaned_data['account_type']
-        )
-        bank_account_holder.save()
-
-        # Create a new BankAccount object
-        bank_account = BankAccount(
-            holder_name=cleaned_data['holder_name'],
-            account_number=cleaned_data['account_number'],
-            ifsc_code=cleaned_data['ifsc_code'],
-            swift_code=cleaned_data['swift_code'],
-            bank_name=cleaned_data['bank_name'],
-            branch_name=cleaned_data['branch_name']
-        )
-        bank_account.save()
-
-        # Create a new BankConfiguration object
-        bank_configuration = BankConfiguration(
-            set_cheque_book_range=(cleaned_data['set_cheque_book_range'] == 'yes'),
-            enable_cheque_printing=(cleaned_data['enable_cheque_printing'] == 'yes'),
-            set_cheque_printing_configuration=(cleaned_data['set_cheque_printing_configuration'] == 'yes')
-        )
-        bank_configuration.save()
-
-        # Create a new MailingAddress object
-        mailing_address = MailingAddress(
-            name=cleaned_data['name'],
-            address=cleaned_data['address'],
-            country=cleaned_data['country'],
-            state=cleaned_data['state'],
-            pin=cleaned_data['pin']
-        )
-        mailing_address.save()
-
-        # Create a new BankingDetails object
-        banking_details = BankingDetails(
-            pan_it_number=cleaned_data['pan_it_number'],
-            registration_details=cleaned_data['registration_details'],
-            gstin_un=cleaned_data['gstin_un'],
-            set_alter_gst_details=(cleaned_data['set_alter_gst_details'] == 'yes')
-        )
-        banking_details.save()
-
-        # Create a new OpeningBalance object
-        opening_balance = OpeningBalance(
-            date=cleaned_data['date'],
-            amount=cleaned_data['amount']
-        )
-        opening_balance.save()
+   

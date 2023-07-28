@@ -4,7 +4,7 @@
 {% block body %}
 <div class="container">
     
-    <form method="post" action="{% url 'bank_account_holder_create' %}">
+    <form method="post" action="{% url 'bank_account_holder_create' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="row">
             <div class="col-md-6">

@@ -167,32 +167,21 @@ left: 50%; */
     <table class="table">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Alias</th>
-                <th>Account Type</th>
-                <!-- Add additional columns here -->
                 <th>Holder Name</th>
                 <th>Account Number</th>
                 <th>IFSC Code</th>
+                <th>Bank Name</th>
                 <!-- ... -->
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            {% for bank_account_holder in bank_account_holders %}
-            {% with bank_account=bank_accounts_map.bank_account_holder.pk %}
-            {% with bank_configuration=bank_configurations_map.bank_account_holder.pk %}
-                {% with mailing_address=mailing_addresses_map.bank_account_holder.pk %}
-                    {% with banking_detail=banking_details_map.bank_account_holder.pk %}
-                        {% with opening_balance=opening_balances_map.bank_account_holder.pk %}
-                            <tr>
-                                        <td>{{ bank_account_holder.name }}</td>
-                                        <td>{{ bank_account_holder.alias }}</td>
-                                        <td>{{ bank_account_holder.get_account_type_display }}</td>
-                                        <!-- Add additional data here -->
-                                        <td>{{ bank_account.holder_name }}</td>
-                                        <td>{{ bank_account.account_number }}</td>
-                                        <td>{{ bank_account.ifsc_code }}</td>
+            {% for item in data %}
+                <tr>
+                    <td>{{ item.bank_account.holder_name }}</td>
+                    <td>{{ item.bank_account.account_number }}</td>
+                    <td>{{ item.bank_account.ifsc_code }}</td>
+                    <td>{{ item.bank_account.get_bank_name_display }}</td>
                                         <!-- ... -->
                                         <!-- Action column -->
                                         <td><button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#viewModal-{{ bank_account_holder.pk }}">View</button></td>
@@ -244,11 +233,8 @@ left: 50%; */
                                         </div>
                                     </div>
 
-                                {% endwith %}
-                            {% endwith %}
-                        {% endwith %}
-                    {% endwith %}
-                {% endwith %}
+                                
+                           
             {% endfor %}
         </tbody>
     </table>
