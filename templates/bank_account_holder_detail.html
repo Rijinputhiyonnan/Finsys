@@ -1,0 +1,28 @@
+<!-- bank_account_detail.html -->
+<div class="container">
+    <h2>Bank Account Details</h2>
+    <h3>Account Information</h3>
+    <p>Holder Name: {{ account.holder_name }}</p>
+    <p>Account Number: {{ account.account_number }}</p>
+    <p>IFSC Code: {{ account.ifsc_code }}</p>
+    <p>SWIFT Code: {{ account.swift_code }}</p>
+    <p>Bank Name: {{ account.get_bank_name_display }}</p>
+    <p>Branch Name: {{ account.branch_name }}</p>
+    <h3>Holder Information</h3>
+    <p>Name: {{ holder.name }}</p>
+    <p>Alias: {{ holder.alias }}</p>
+    <p>Account Type: {{ holder.get_account_type_display }}</p>
+    <h3>Mailing Address</h3>
+    <p>Name: {{ mailing_address.name }}</p>
+    <p>Address: {{ mailing_address.address }}</p>
+    <p>Country: {{ mailing_address.country }}</p>
+    <p>State: {{ mailing_address.get_state_display }}</p>
+    <p>PIN: {{ mailing_address.pin }}</p>
+    <h3>Banking Details</h3>
+    <p>PAN/IT Number: {{ banking_details.pan_it_number }}</p>
+    <p>Registration Details: {{ banking_details.registration_details }}</p>
+    <p>GSTIN/UN: {{ banking_details.gstin_un }}</p>
+    <h3>Opening Balance</h3>
+    <p>Date: {{ opening_balance.date }}</p>
+    <p>Amount: {{ opening_balance.amount }}</p>
+</div>

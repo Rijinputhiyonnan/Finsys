@@ -38352,49 +38352,96 @@ def bank_account_holder_create(request):
 
 
 
+from django.shortcuts import render
+from .models import BankAccount, BankAccountHolder, BankConfiguration, MailingAddress, BankingDetails, OpeningBalance
+
 def bank_account_holder_list(request):
-    bank_account_holders = BankAccountHolder.objects.all()
-    holder_names = [bank_account_holder.name for bank_account_holder in bank_account_holders]
-    bank_accounts = BankAccount.objects.filter(holder_name__in=holder_names)
-    bank_configurations = BankConfiguration.objects.all()
-    mailing_addresses = MailingAddress.objects.all()
-    banking_details = BankingDetails.objects.all()
-    opening_balances = OpeningBalance.objects.all()
-    bank_accounts_map = {bank_account.holder_name: bank_account for bank_account in bank_accounts}
-    # define additional maps here
-    context = {
-        'bank_account_holders': bank_account_holders,
-        'bank_accounts_map': bank_accounts_map,
-        'bank_configurations': bank_configurations,
-        'mailing_addresses': mailing_addresses,
-        'banking_details': banking_details,
-        'opening_balances': opening_balances,
-        # pass additional maps here
-    }
+    accounts = BankAccount.objects.all()
+    context = {'accounts': accounts}
     return render(request, 'bank_account_holder_list.html', context)
 
+# views.py
+from django.shortcuts import render, get_object_or_404
+from .models import BankAccount, BankAccountHolder, MailingAddress, BankingDetails, OpeningBalance
+
+def bank_account_holder_detail(request, pk):
+    account = get_object_or_404(BankAccount, pk=pk)
+    holder = get_object_or_404(BankAccountHolder, name=account.holder_name)
+    mailing_address = get_object_or_404(MailingAddress, name=account.holder_name)
+    banking_details = get_object_or_404(BankingDetails, pan_it_number=account.holder_name)
+    opening_balance = get_object_or_404(OpeningBalance, date=account.holder_name)
+    context = {
+        'account': account,
+        'holder': holder,
+        'mailing_address': mailing_address,
+        'banking_details': banking_details,
+        'opening_balance': opening_balance,
+    }
+    return render(request, 'bank_account_holder_detail.html', context)
 
 
 
 
 
-from django.shortcuts import render, redirect
-from django.forms import ModelForm
-from app1.models import BankAccountHolder
 
-class BankAccountHolderForm(ModelForm):
-    class Meta:
-        model = BankAccountHolder
-        fields = '__all__'
+
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import BankAccountHolder, BankAccount, BankConfiguration, MailingAddress, BankingDetails, OpeningBalance
+from .forms import BankAccountHolderForm, BankAccountForm, BankConfigurationForm, MailingAddressForm, BankingDetailsForm, OpeningBalanceForm
 
 def edit(request, pk):
-    bank_account_holder = get_object_or_404(BankAccountHolder, pk=pk)
-    form = BankAccountHolderForm(request.POST or None, instance=bank_account_holder)
+    account_holder = get_object_or_404(BankAccountHolder, pk=pk)
+    bank_account = get_object_or_404(BankAccount, holder_name=account_holder.name)
+    bank_configuration = get_object_or_404(BankConfiguration)
+    mailing_address = get_object_or_404(MailingAddress)
+    banking_details = get_object_or_404(BankingDetails)
+    opening_balance = get_object_or_404(OpeningBalance)
     if request.method == 'POST':
-        if form.is_valid():
-            form.save()
+        account_holder_form = BankAccountHolderForm(request.POST, instance=account_holder)
+        bank_account_form = BankAccountForm(request.POST, instance=bank_account)
+        bank_configuration_form = BankConfigurationForm(request.POST, instance=bank_configuration)
+        mailing_address_form = MailingAddressForm(request.POST, instance=mailing_address)
+        banking_details_form = BankingDetailsForm(request.POST, instance=banking_details)
+        opening_balance_form = OpeningBalanceForm(request.POST, instance=opening_balance)
+        if account_holder_form.is_valid() and bank_account_form.is_valid() and bank_configuration_form.is_valid() and mailing_address_form.is_valid() and banking_details_form.is_valid() and opening_balance_form.is_valid():
+            account_holder_form.save()
+            bank_account_form.save()
+            bank_configuration_form.save()
+            mailing_address_form.save()
+            banking_details_form.save()
+            opening_balance_form.save()
             return redirect('bank_account_holder_list')
-    return render(request, 'bank_account_holder_edit.html', {'form': form})
+    else:
+        account_holder_form = BankAccountHolderForm(instance=account_holder)
+        bank_account_form = BankAccountForm(instance=bank_account)
+        bank_configuration_form = BankConfigurationForm(instance=bank_configuration)
+        mailing_address_form = MailingAddressForm(instance=mailing_address)
+        banking_details_form = BankingDetailsForm(instance=banking_details)
+        opening_balance_form = OpeningBalanceForm(instance=opening_balance)
+    context = {
+        'account_holder_form': account_holder_form,
+        'bank_account_form': bank_account_form,
+        'bank_configuration_form': bank_configuration_form,
+        'mailing_address_form': mailing_address_form,
+        'banking_details_form': banking_details_form,
+        'opening_balance_form': opening_balance_form
+    }
+    return render(request, 'bank_account_holder_edit.html', context)
 
 
 
+
+from django.shortcuts import redirect, get_object_or_404
+from .models import BankAccountHolder
+
+def activate_bank_account_holder(request, pk):
+    account_holder = get_object_or_404(BankAccountHolder, pk=pk)
+    account_holder.is_active = True
+    account_holder.save()
+    return redirect('bank_accounts')
+
+def deactivate_bank_account_holder(request, pk):
+    account_holder = get_object_or_404(BankAccountHolder, pk=pk)
+    account_holder.is_active = False
+    account_holder.save()
+    return redirect('bank_accounts')

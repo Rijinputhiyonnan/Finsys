@@ -164,85 +164,25 @@ left: 50%; */
 
 <div class="container">
     <h2></h2>
-    <table class="table">
-        <thead>
+    <table>
+        <tr>
+            <th>Holder Name</th>
+            <th>Account Number</th>
+            <th>IFSC Code</th>
+            <th>Bank Name</th>
+            <th>Link</th>
+        </tr>
+        {% for account in accounts %}
             <tr>
-                <th>Holder Name</th>
-                <th>Account Number</th>
-                <th>IFSC Code</th>
-                <th>Bank Name</th>
-                <!-- ... -->
-                <th>Action</th>
+                <td>{{ account.holder_name }}</td>
+                <td>{{ account.account_number }}</td>
+                <td>{{ account.ifsc_code }}</td>
+                <td>{{ account.get_bank_name_display }}</td>
+                <!-- Detail link -->
+                <td><a href="{% url 'bank_account_detail' pk=account.pk %}">View details</a></td>
             </tr>
-        </thead>
-        <tbody>
-            {% for item in data %}
-                <tr>
-                    <td>{{ item.bank_account.holder_name }}</td>
-                    <td>{{ item.bank_account.account_number }}</td>
-                    <td>{{ item.bank_account.ifsc_code }}</td>
-                    <td>{{ item.bank_account.get_bank_name_display }}</td>
-                                        <!-- ... -->
-                                        <!-- Action column -->
-                                        <td><button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#viewModal-{{ bank_account_holder.pk }}">View</button></td>
-                                    </tr>
-
-                                    <!-- View modal -->
-                                    <div class="modal fade" id="viewModal-{{ bank_account_holder.pk }}" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel-{{ bank_account_holder.pk }}" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="viewModalLabel-{{ bank_account_holder.pk }}">Bank Account Holder Details</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">×</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <!-- Display all the details here -->
-                                                    <h6>Bank Account Holder</h6>
-                                                    <p><strong>Name:</strong> {{ bank_account_holder.name }}</p>
-                                                    <p><strong>Alias:</strong> {{ bank_account_holder.alias }}</p>
-                                                    <p><strong>Account Type:</strong> {{ bank_account_holder.get_account_type_display }}</p>
-                                                    <!-- ... -->
-                                                    <h6>Bank Account</h6>
-                                                    <p><strong>Holder Name:</strong> {{ bank_account.holder_name }}</p>
-                                                    <p><strong>Account Number:</strong> {{ bank_account.account_number }}</p>
-                                                    <p><strong>IFSC Code:</strong> {{ bank_account.ifsc_code }}</p>
-                                                    <!-- ... -->
-                                                    <h6>Bank Configuration</h6>
-                                                    <p><strong>Cheque Book Range:</strong> {{ bank_configuration.cheque_book_range }}</p>
-                                                    <p><strong>Cheque Printing:</strong> {{ bank_configuration.cheque_printing }}</p>
-                                                    <!-- ... -->
-                                                    <h6>Mailing Address</h6>
-                                                    <p><strong>Name:</strong> {{ mailing_address.name }}</p>
-                                                    <p><strong>Address:</strong> {{ mailing_address.address }}</p>
-                                                    <!-- ... -->
-                                                    <h6>Banking Details</h6>
-                                                    <p><strong>PAN/IT Number:</strong> {{ banking_detail.pan_it_number }}</p>
-                                                    <!-- ... -->
-                                                    <h6>Opening Balance</h6>
-                                                    <p><strong>Date:</strong> {{ opening_balance.date }}</p>
-                                                    <p><strong>Amount:</strong> {{ opening_balance.amount }}</p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <!-- Edit button -->
-                                                    <a href="{% url 'edit' pk=bank_account_holder.pk %}" class="btn btn-outline-secondary">Edit</a>
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                
-                           
-            {% endfor %}
-        </tbody>
+        {% endfor %}
     </table>
-</div>
-
-<!-- Include Bootstrap JS and dependencies (required for modals) -->
-<script src="{% static 'js/jquery.min.js' %}"></script>
-<script src="{% static 'js/popper.min.js' %}"></script>
-<script src="{% static 'js/bootstrap.min.js' %}"></script>
+    
 
 {% endblock %}

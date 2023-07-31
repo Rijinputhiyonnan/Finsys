@@ -897,7 +897,9 @@ path('search_retinvoice',views.search_retinvoice,name='search_retinvoice'),
   path('gosearch/', views.gosearch, name='gosearch'),
   path('edit/<int:pk>/', views.edit, name='edit'),
  path('edit/<int:pk>/', views.edit, name='bank_account_holder_edit'),
+ path('bank_account_holder/<int:pk>/', views.bank_account_holder_detail, name='bank_account_detail'),
  
-
+path('activate/<int:pk>/', views.activate_bank_account_holder, name='activate'),
+    path('deactivate/<int:pk>/', views.deactivate_bank_account_holder, name='deactivate'),
 
 ]
