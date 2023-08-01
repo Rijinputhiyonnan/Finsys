@@ -46,17 +46,22 @@ class BankAccountHolderForm(forms.ModelForm):
             'account_type': forms.Select(attrs={'class': 'black-select'})
         }
 
-
 class BankAccountForm(forms.ModelForm):
     class Meta:
         model = BankAccount
         fields = ['holder_name', 'account_number', 'ifsc_code', 'swift_code', 'bank_name', 'branch_name']
-
+        widgets = {
+            'bank_name': forms.Select(attrs={'class': 'black-select'}),
+        }
 
 class MailingAddressForm(forms.ModelForm):
     class Meta:
         model = MailingAddress
         fields = ['name', 'address', 'country', 'state', 'pin']
+        widgets = {
+            'country': forms.Select(attrs={'class': 'black-select'}),
+            'state': forms.Select(attrs={'class': 'black-select'}),
+        }
 
 
 class OpeningBalanceForm(forms.ModelForm):

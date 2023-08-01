@@ -1,28 +1,77 @@
-<!-- bank_account_detail.html -->
+{% extends 'app1/base.html' %}
+{% load static %}
+
+{% block body %}
 <div class="container">
     <h2>Bank Account Details</h2>
-    <h3>Account Information</h3>
-    <p>Holder Name: {{ account.holder_name }}</p>
-    <p>Account Number: {{ account.account_number }}</p>
-    <p>IFSC Code: {{ account.ifsc_code }}</p>
-    <p>SWIFT Code: {{ account.swift_code }}</p>
-    <p>Bank Name: {{ account.get_bank_name_display }}</p>
-    <p>Branch Name: {{ account.branch_name }}</p>
-    <h3>Holder Information</h3>
-    <p>Name: {{ holder.name }}</p>
-    <p>Alias: {{ holder.alias }}</p>
-    <p>Account Type: {{ holder.get_account_type_display }}</p>
-    <h3>Mailing Address</h3>
-    <p>Name: {{ mailing_address.name }}</p>
-    <p>Address: {{ mailing_address.address }}</p>
-    <p>Country: {{ mailing_address.country }}</p>
-    <p>State: {{ mailing_address.get_state_display }}</p>
-    <p>PIN: {{ mailing_address.pin }}</p>
-    <h3>Banking Details</h3>
-    <p>PAN/IT Number: {{ banking_details.pan_it_number }}</p>
-    <p>Registration Details: {{ banking_details.registration_details }}</p>
-    <p>GSTIN/UN: {{ banking_details.gstin_un }}</p>
-    <h3>Opening Balance</h3>
-    <p>Date: {{ opening_balance.date }}</p>
-    <p>Amount: {{ opening_balance.amount }}</p>
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Account Information</h3>
+            <ul>
+                <li>Holder Name: {{ account.holder_name }}</li>
+                <li>Account Number: {{ account.account_number }}</li>
+                <li>IFSC Code: {{ account.ifsc_code }}</li>
+                <li>SWIFT Code: {{ account.swift_code }}</li>
+                <li>Bank Name: {{ account.get_bank_name_display }}</li>
+                <li>Branch Name: {{ account.branch_name }}</li>
+            </ul>
+
+            <h3>Holder Information</h3>
+            <ul>
+                <li>Name: {{ holder.name }}</li>
+                <li>Alias: {{ holder.alias }}</li>
+                <li>Account Type: {{ holder.get_account_type_display }}</li>
+            </ul>
+
+            {% if address %}
+                <h3>Mailing Address</h3>
+                <ul>
+                    <li>Name: {{ address.name }}</li>
+                    <li>Address: {{ address.address }}</li>
+                    <li>Country: {{ address.country.name }}</li>
+                    <li>State: {{ address.get_state_display }}</li>
+                    <li>PIN Code: {{ address.pin }}</li>
+                </ul>
+            {% else %}
+                <p>No mailing address found.</p>
+            {% endif %}
+        </div>
+
+        <div class="col-md-6">
+            <h3>Banking Details</h3>
+            <ul>
+                <li>PAN/IT Number: {{ banking_details.pan_it_number }}</li>
+                <li>Registration Details: {{ banking_details.registration_details }}</li>
+                <li>GSTIN/UN: {{ banking_details.gstin_un }}</li>
+            </ul>
+
+            <h3>Opening Balance</h3>
+            <ul>
+                <li>Date: {{ opening_balance.date|date:"F j, Y" }}</li>
+                <li>Amount: {{ opening_balance.amount|floatformat:2 }}</li>
+            </ul>
+
+            <!-- Add edit, activate, and deactivate options -->
+            <a href="{% url 'edit' account.pk %}" class="btn btn-primary">Edit</a>
+
+            {% if account.is_active %}
+                <a href="{% url 'deactivate_bank_account_holdere' account.pk %}" class="btn btn-danger">Deactivate</a>
+            {% else %}
+                <a href="{% url 'activate_bank_account_holder' account.pk %}" class="btn btn-success">Activate</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Add custom styles to change the font size and color of headings #}
+    <style>
+        h2 {
+            font-size: 24px;
+            color: #f2f2f2;
+        }
+        h3 {
+            font-size: 18px;
+            color: #020202;
+        }
+    </style>
 </div>
+{% endblock %}

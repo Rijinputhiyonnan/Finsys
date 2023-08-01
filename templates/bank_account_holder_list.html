@@ -162,27 +162,27 @@ left: 50%; */
                         
                     </div>
 
-<div class="container">
-    <h2></h2>
-    <table>
-        <tr>
-            <th>Holder Name</th>
-            <th>Account Number</th>
-            <th>IFSC Code</th>
-            <th>Bank Name</th>
-            <th>Link</th>
-        </tr>
-        {% for account in accounts %}
-            <tr>
-                <td>{{ account.holder_name }}</td>
-                <td>{{ account.account_number }}</td>
-                <td>{{ account.ifsc_code }}</td>
-                <td>{{ account.get_bank_name_display }}</td>
-                <!-- Detail link -->
-                <td><a href="{% url 'bank_account_detail' pk=account.pk %}">View details</a></td>
-            </tr>
-        {% endfor %}
-    </table>
-    
-
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Holder Name</th>
+                                <th>Account Number</th>
+                                <th>IFSC Code</th>
+                                <th>Bank Name</th>
+                                <th>Link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for account in accounts %}
+                                <tr>
+                                    <td>{{ account.holder_name }}</td>
+                                    <td>{{ account.account_number }}</td>
+                                    <td>{{ account.ifsc_code }}</td>
+                                    <td>{{ account.get_bank_name_display }}</td>
+                                    <!-- Detail link -->
+                                    <td><a href="{% url 'bank_account_holder_detail' account.pk %}">View Details</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
 {% endblock %}
