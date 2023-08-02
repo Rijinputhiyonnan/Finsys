@@ -52,7 +52,8 @@
             </ul>
 
             <!-- Add edit, activate, and deactivate options -->
-            <a href="{% url 'edit' account.pk %}" class="btn btn-primary">Edit</a>
+            <a href="{% url 'bank_account_holder_edit' pk=holder.pk %}" class="btn btn-primary">Edit</a>
+
 
             {% if account.is_active %}
                 <a href="{% url 'deactivate_bank_account_holdere' account.pk %}" class="btn btn-danger">Deactivate</a>
