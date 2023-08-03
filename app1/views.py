@@ -38277,7 +38277,7 @@ def account_dropdown(request):
 
         return JsonResponse(options)
 
-
+#Rijin
 
 from .forms import BankAccountHolderForm, BankAccountForm, BankConfigurationForm, MailingAddressForm, BankingDetailsForm, OpeningBalanceForm
 def bank_account_holder_create(request):
@@ -38388,11 +38388,6 @@ def bank_account_holder_detail(request, pk):
     }
     return render(request, 'bank_account_holder_detail.html', context)
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from .models import BankAccountHolder, BankAccount, BankConfiguration, MailingAddress, BankingDetails, OpeningBalance
-from .forms import BankAccountHolderForm, BankAccountForm, BankConfigurationForm, MailingAddressForm, BankingDetailsForm, OpeningBalanceForm
-
 def bank_account_holder_edit(request, pk):
     bank_account_holder = get_object_or_404(BankAccountHolder, pk=pk)
     bank_account = get_object_or_404(BankAccount, holder_name=bank_account_holder.name)
@@ -38461,7 +38456,7 @@ def bank_account_holder_edit(request, pk):
         opening_balance_form = OpeningBalanceForm(instance=opening_balance,
                                                   prefix='opening_balance')
 
-        context = {
+    context = {
         'bank_account_holder': bank_account_holder,
         'bank_account': bank_account,
         'mailing_address': mailing_address,
@@ -38473,7 +38468,7 @@ def bank_account_holder_edit(request, pk):
         'mailing_address_form': mailing_address_form,
         'opening_balance_form': opening_balance_form,
         'banking_details_form': banking_details_form,
-        'bank_configuration_form': bank_configuration_form
+        'bank_configuration_form': bank_configuration_form,
     }
     return render(request, 'bank_account_holder_edit.html', context)
 
@@ -38482,17 +38477,51 @@ def bank_account_holder_edit(request, pk):
 
 
 
-from django.shortcuts import redirect, get_object_or_404
-from .models import BankAccountHolder
 
-def activate_bank_account_holder(request, pk):
-    account_holder = get_object_or_404(BankAccountHolder, pk=pk)
-    account_holder.is_active = True
-    account_holder.save()
+from django.shortcuts import get_object_or_404
+from .models import BankAccount
+
+def activate_bank_account(request, pk):
+    # Get the BankAccount object with the given primary key (pk)
+    bank_account = get_object_or_404(BankAccount, pk=pk)
+
+    # Activate the bank account
+    bank_account.is_active = True
+    bank_account.save()
+
+    # Redirect to a success page
     return redirect('bank_account_holder_list')
 
-def deactivate_bank_account_holder(request, pk):
-    account_holder = get_object_or_404(BankAccountHolder, pk=pk)
-    account_holder.is_active = False
-    account_holder.save()
+def deactivate_bank_account(request, pk):
+    # Get the BankAccount object with the given primary key (pk)
+    bank_account = get_object_or_404(BankAccount, pk=pk)
+
+    # Deactivate the bank account
+    bank_account.is_active = False
+    bank_account.save()
+
+    # Redirect to a success page
     return redirect('bank_account_holder_list')
+
+from .forms import BankAccountFilterForm
+
+def bank_account_list(request):
+    # Handle form submission
+    form = BankAccountFilterForm(request.GET)
+    if form.is_valid():
+        status = form.cleaned_data.get('status')
+    else:
+        status = 'all'
+
+    # Filter bank accounts based on selected status
+    if status == 'active':
+        accounts = BankAccount.objects.filter(is_active=True)
+    elif status == 'inactive':
+        accounts = BankAccount.objects.filter(is_active=False)
+    else:
+        accounts = BankAccount.objects.all()
+
+    # Render the template
+    context = {'accounts': accounts, 'form': form}
+    return render(request, 'bank_account_list.html', context)
+

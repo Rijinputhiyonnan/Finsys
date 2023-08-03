@@ -100,8 +100,7 @@ left: 50%; */
                             <form action="{% url 'gosearch' %}" method="POST">{% csrf_token %}
                             <div class="search">
                                 
-                                <input type="text" class="searchTerm" name="search" style="background-color: #2f516f; color: white;">
-
+                               <input type="text" class="searchTerm" name="search">
                                <button type="submit" class="searchButton">
                                  <i class="fa fa-search"></i>
                               </button>
@@ -160,27 +159,33 @@ left: 50%; */
                         
                     </div>
 
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Holder Name</th>
-                                <th>Account Number</th>
-                                <th>IFSC Code</th>
-                                <th>Bank Name</th>
-                                <th>Link</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for account in accounts %}
+                    <div class="container">
+                        <h2>Bank Accounts</h2>
+                    
+                       
+                        <!-- Add table -->
+                        <table class="table table-striped">
+                            <thead>
                                 <tr>
-                                    <td>{{ account.holder_name }}</td>
-                                    <td>{{ account.account_number }}</td>
-                                    <td>{{ account.ifsc_code }}</td>
-                                    <td>{{ account.get_bank_name_display }}</td>
-                                    <!-- Detail link -->
-                                    <td><a href="{% url 'bank_account_holder_detail' account.pk %}">View Details</a></td>
+                                    <th>Holder Name</th>
+                                    <th>Account Number</th>
+                                    <th>IFSC Code</th>
+                                    <th>Bank Name</th>
+                                    <th>Link</th>
                                 </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-{% endblock %}
+                            </thead>
+                            <tbody>
+                                {% for account in accounts %}
+                                    <tr>
+                                        <td>{{ account.holder_name }}</td>
+                                        <td>{{ account.account_number }}</td>
+                                        <td>{{ account.ifsc_code }}</td>
+                                        <td>{{ account.get_bank_name_display }}</td>
+                                        <!-- Detail link -->
+                                        <td><a href="{% url 'bank_account_holder_detail' account.pk %}">View Details</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endblock %}

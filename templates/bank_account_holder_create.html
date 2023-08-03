@@ -3,7 +3,6 @@
 
 {% block body %}
 <div class="container">
-    
     <form method="post" action="{% url 'bank_account_holder_create' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="row">
@@ -14,6 +13,12 @@
                         <label class="col-sm-4 col-form-label">{{ field.label }}</label>
                         <div class="col-sm-8">
                             {{ field }}
+                            <style>
+                                #{{ field.auto_id }} {
+                                    background-color: #2f516f;
+                                    color: white;
+                                }
+                            </style>
                         </div>
                     </div>
                 {% endfor %}
@@ -25,6 +30,12 @@
                         <label class="col-sm-4 col-form-label">{{ field.label }}</label>
                         <div class="col-sm-8">
                             {{ field }}
+                            <style>
+                                #{{ field.auto_id }} {
+                                    background-color: #2f516f;
+                                    color: white;
+                                }
+                            </style>
                         </div>
                     </div>
                 {% endfor %}
@@ -42,6 +53,12 @@
                             <label class="col-sm-4 col-form-label">{{ field.label }}</label>
                             <div class="col-sm-8">
                                 {{ field }}
+                                <style>
+                                    #{{ field.auto_id }} {
+                                        background-color: #2f516f;
+                                        color: white;
+                                    }
+                                </style>
                             </div>
                         {% endif %}
                     </div>
@@ -54,6 +71,12 @@
                         <label class="col-sm-4 col-form-label">{{ field.label }}</label>
                         <div class="col-sm-8">
                             {{ field }}
+                            <style>
+                                #{{ field.auto_id }} {
+                                    background-color: #2f516f;
+                                    color: white;
+                                }
+                            </style>
                         </div>
                     </div>
                 {% endfor %}
@@ -71,6 +94,12 @@
                             <label class="col-sm-4 col-form-label">{{ field.label }}</label>
                             <div class="col-sm-8">
                                 {{ field }}
+                                <style>
+                                    #{{ field.auto_id }} {
+                                        background-color: #2f516f;
+                                        color: white;
+                                    }
+                                </style>
                             </div>
                         {% endif %}
                     </div>
@@ -83,6 +112,12 @@
                         <label class="col-sm-4 col-form-label">{{ field.label }}</label>
                         <div class="col-sm-8">
                             {{ field }}
+                            <style>
+                                #{{ field.auto_id }} {
+                                    background-color: #2f516f;
+                                    color: white;
+                                }
+                            </style>
                         </div>
                     </div>
                 {% endfor %}
@@ -103,5 +138,6 @@
             background-color: white;
         }
     </style>
-</div>
+</div> 
 {% endblock %}
+

@@ -89,3 +89,11 @@ class BankConfigurationForm(forms.ModelForm):
 
 
    
+
+class BankAccountFilterForm(forms.Form):
+    STATUS_CHOICES = [
+        ('all', 'All'),
+        ('active', 'Active'),
+        ('inactive', 'Inactive'),
+    ]
+    status = forms.ChoiceField(choices=STATUS_CHOICES, required=False)

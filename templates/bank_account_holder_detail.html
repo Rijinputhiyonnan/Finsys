@@ -54,11 +54,12 @@
             <!-- Add edit, activate, and deactivate options -->
             <a href="{% url 'bank_account_holder_edit' pk=holder.pk %}" class="btn btn-primary">Edit</a>
 
-
             {% if account.is_active %}
-                <a href="{% url 'deactivate_bank_account_holdere' account.pk %}" class="btn btn-danger">Deactivate</a>
+                <!-- Add deactivate button -->
+                <a href="{% url 'deactivate_bank_account' pk=account.pk %}" class="btn btn-danger">Deactivate</a>
             {% else %}
-                <a href="{% url 'activate_bank_account_holder' account.pk %}" class="btn btn-success">Activate</a>
+                <!-- Add activate button -->
+                <a href="{% url 'activate_bank_account' pk=account.pk %}" class="btn btn-success">Activate</a>
             {% endif %}
         </div>
     </div>
