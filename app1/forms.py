@@ -72,16 +72,30 @@ class OpeningBalanceForm(forms.ModelForm):
             'date': forms.DateInput(attrs={'type': 'date', 'format': 'dd-mm-yyyy'})
         }
 class BankingDetailsForm(forms.ModelForm):
-    set_alter_gst_details = forms.ChoiceField(choices=[(True, 'Yes'), (False, 'No')], widget=forms.RadioSelect)
+    set_alter_gst_details = forms.ChoiceField(choices=[(True, 'Yes'), (False, 'No')], widget=forms.Select)
 
     class Meta:
         model = BankingDetails
-        fields = ['pan_it_number', 'registration_details', 'gstin_un', 'set_alter_gst_details']
+        fields = ['pan_it_number', 'registration_type', 'gstin_un', 'set_alter_gst_details']
+        labels = {
+            'registration_type': 'Registration Type',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.initial.get('registration_type') in ['consumer', 'unregistered']:
+            self.fields['gstin_un'].widget.attrs['readonly'] = True
+            self.fields['gstin_un'].widget.attrs['style'] = 'pointer-events: none;'
+
+    def clean_gstin_un(self):
+        if self.cleaned_data.get('registration_type') in ['consumer', 'unregistered']:
+            return ''
+        return self.cleaned_data.get('gstin_un')
 
 class BankConfigurationForm(forms.ModelForm):
-    set_cheque_book_range = forms.ChoiceField(choices=[(True, 'Yes'), (False, 'No')], widget=forms.RadioSelect)
-    enable_cheque_printing = forms.ChoiceField(choices=[(True, 'Yes'), (False, 'No')], widget=forms.RadioSelect)
-    set_cheque_printing_configuration = forms.ChoiceField(choices=[(True, 'Yes'), (False, 'No')], widget=forms.RadioSelect)
+    set_cheque_book_range = forms.ChoiceField(choices=[(True, 'Yes'), (False, 'No')], widget=forms.Select)
+    enable_cheque_printing = forms.ChoiceField(choices=[(True, 'Yes'), (False, 'No')], widget=forms.Select)
+    set_cheque_printing_configuration = forms.ChoiceField(choices=[(True, 'Yes'), (False, 'No')], widget=forms.Select)
 
     class Meta:
         model = BankConfiguration

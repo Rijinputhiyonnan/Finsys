@@ -1845,12 +1845,20 @@ class MailingAddress(models.Model):
     )
     pin = models.CharField(max_length=6)
 
-
 class BankingDetails(models.Model):
+    REGISTRATION_TYPE_CHOICES = [
+        ('regular', 'Regular'),
+        ('composition', 'Composition'),
+        ('consumer', 'Consumer'),
+        ('unregistered', 'Unregistered'),
+        ('unknown', 'Unknown'),
+    ]
+
     pan_it_number = models.CharField(max_length=10)
-    registration_details = models.TextField()
+    registration_type = models.CharField(max_length=20, choices=REGISTRATION_TYPE_CHOICES, default='unknown')
     gstin_un = models.CharField(max_length=15)
     set_alter_gst_details = models.BooleanField(default=False)
+
     
 
 
