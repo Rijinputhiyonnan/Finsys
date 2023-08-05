@@ -87,7 +87,7 @@
         <!-- Additional code -->
         <div class="row">
             <div class="col-md-6">
-                <h2>Tax Registration Form</h2>
+                <h2>Tax Registration Form</h2> 
                 {% for field in banking_details_form %}
                     <div class="form-group row">
                         {% if field.field.widget.input_type == 'checkbox' %}
@@ -106,23 +106,6 @@
                         {% endif %}
                     </div>
                 {% endfor %}
-            </div>
-            <div class="col-md-6">
-                <h2>Opening Balance Form</h2>
-                {% for field in opening_balance_form %}
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">{{ field.label }}</label>
-                        <div class="col-sm-8">
-                            {{ field }}
-                            <style>
-                                #{{ field.auto_id }} {
-                                    background-color: #2f516f;
-                                    color: white;
-                                }
-                            </style>
-                        </div>
-                    </div> 
-                {% endfor %} 
             </div> 
         </div> 
 
@@ -148,6 +131,8 @@
         } 
     </style> 
 </div> 
+
+
 
 <!-- JavaScript code -->
 <script> 
