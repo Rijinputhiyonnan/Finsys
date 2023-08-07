@@ -111,3 +111,5 @@ class BankAccountFilterForm(forms.Form):
         ('inactive', 'Inactive'),
     ]
     status = forms.ChoiceField(choices=STATUS_CHOICES, required=False)
+
+
