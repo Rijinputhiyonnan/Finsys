@@ -1,6 +1,7 @@
 {% extends 'app1/base.html' %}
 {% load static %}
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
 {% block body %}
@@ -15,12 +16,7 @@
                         <label class="col-sm-4 col-form-label">{{ field.label }}</label>
                         <div class="col-sm-8">
                             {{ field }}
-                            <style>
-                                #{{ field.auto_id }} {
-                                    background-color: #2f516f;
-                                    color: white;
-                                }
-                            </style>
+                            
                         </div>
                     </div>
                 {% endfor %}
@@ -32,12 +28,7 @@
                         <label class="col-sm-4 col-form-label">{{ field.label }}</label>
                         <div class="col-sm-8">
                             {{ field }}
-                            <style>
-                                #{{ field.auto_id }} {
-                                    background-color: #2f516f;
-                                    color: white;
-                                }
-                            </style>
+                            
                         </div>
                     </div>
                 {% endfor %}
@@ -55,12 +46,7 @@
                             <label class="col-sm-4 col-form-label">{{ field.label }}</label>
                             <div class="col-sm-8">
                                 {{ field }}
-                                <style>
-                                    #{{ field.auto_id }} {
-                                        background-color: #2f516f;
-                                        color: white;
-                                    }
-                                </style>
+                                
                             </div>
                         {% endif %}
                     </div>
@@ -73,12 +59,7 @@
                         <label class="col-sm-4 col-form-label">{{ field.label }}</label>
                         <div class="col-sm-8">
                             {{ field }}
-                            <style>
-                                #{{ field.auto_id }} {
-                                    background-color: #2f516f;
-                                    color: white;
-                                }
-                            </style>
+                            
                         </div>
                     </div>
                 {% endfor %}
@@ -97,53 +78,62 @@
                             <label class="col-sm-4 col-form-label">{{ field.label }}</label>
                             <div class="col-sm-8">
                                 {{ field }}
-                                <style>
-                                    #{{ field.auto_id }} {
-                                        background-color: #2f516f;
-                                        color: white;
-                                    }
-                                </style>
+                                
                             </div>
                         {% endif %}
                     </div>
                 {% endfor %}
             </div> 
+            <!-- Opening Balance Form -->
+            <div class="col-md-6">
+                <h2>Opening Balance Form</h2> 
+                {% for field in opening_balance_form %}
+                    <div class="form-group row">
+                        {% if field.field.widget.input_type == 'checkbox' %}
+                            {{ field }} {{ field.label }}
+                        {% else %}
+                            <label class="col-sm-4 col-form-label">{{ field.label }}</label>
+                            <div class="col-sm-8">
+                                {{ field }}
+                                
+                            </div>
+                        {% endif %}
+                    </div> 
+                {% endfor %} 
+            </div> 
         </div> 
 
+      
         <!-- Submit button -->
-        <input type="submit" value="Submit" class="btn btn-primary"> 
+        <input type="submit" value="Submit" class="btn btn-outline-info text-grey mb-3">
     </form> 
-
-    <!-- Custom styles -->
-    {# Add custom styles to change the background color of select elements #}
-   
-</div> 
+</div>
 
 
+<!-- JavaScript code to handle the change event for the registration_type field -->
+<script>
+    // Get references to the registration type and GST number fields
+    let registrationTypeField = document.querySelector('#id_registration_type');
+    let gstNumberField = document.querySelector('#id_gstin_un');
 
-<!-- JavaScript code -->
-<script> 
-// Get references to the relevant form fields
-let registrationTypeField = document.querySelector('#id_registration_type');
-let gstinUnField = document.querySelector('#id_gstin_un');
-
-// Define a function to update the disabled state of the gstin_un field
-function updateGstinUnField() {
-    if (['consumer', 'unregistered'].includes(registrationTypeField.value)) {
-        gstinUnField.disabled = true;
-        gstinUnField.value = '';
-    } else {
-        gstinUnField.disabled = false;
+    // Function to hide or show the GST number field based on the selected registration type
+    function toggleGstNumberField() {
+        let registrationType = registrationTypeField.value;
+        if (registrationType === 'consumer' || registrationType === 'unregistered') {
+            gstNumberField.style.display = 'none';
+        } else {
+            gstNumberField.style.display = '';
+        }
     }
-}
 
-// Call the update function when the page loads
-updateGstinUnField();
+    // Call the toggle function when the page loads
+    toggleGstNumberField();
 
-// Add an event listener to the registration_type field to call the update function when its value changes
-registrationTypeField.addEventListener('change', updateGstinUnField);
-
-
-
+    // Add an event listener to the registration type field to call the toggle function when its value changes
+    registrationTypeField.addEventListener('change', toggleGstNumberField);
 </script>
+
+
+
+
 {% endblock %}
