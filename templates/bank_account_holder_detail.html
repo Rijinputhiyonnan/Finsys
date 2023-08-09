@@ -4,68 +4,134 @@
 
 {% block body %}
 <div class="container">
-    <h2>Bank Account Details</h2>
+    <h2 class="text-center my-4">Bank Account Details</h2>
     <div class="row">
         <div class="col-md-6">
             <h3>Account Information</h3>
-            <ul>
-                <li>Holder Name: {{ account.holder_name }}</li>
-                <li>Account Number: {{ account.account_number }}</li>
-                <li>IFSC Code: {{ account.ifsc_code }}</li>
-                <li>SWIFT Code: {{ account.swift_code }}</li>
-                <li>Bank Name: {{ account.get_bank_name_display }}</li>
-                <li>Branch Name: {{ account.branch_name }}</li>
-            </ul>
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <th scope="row">Holder Name</th>
+                        <td>{{ account.holder_name }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Account Number</th>
+                        <td>{{ account.account_number }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">IFSC Code</th>
+                        <td>{{ account.ifsc_code }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">SWIFT Code</th>
+                        <td>{{ account.swift_code }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Bank Name</th>
+                        <td>{{ account.get_bank_name_display }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Branch Name</th>
+                        <td>{{ account.branch_name }}</td>
+                    </tr>
+                </tbody>
+            </table>
 
             <h3>Holder Information</h3>
-            <ul>
-                <li>Name: {{ holder.name }}</li>
-                <li>Alias: {{ holder.alias }}</li>
-                <li>Account Type: {{ holder.get_account_type_display }}</li>
-            </ul>
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <th scope="row">PAN/IT Number:</th>
+                        <td>{{ banking_details.pan_it_number }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Registration Type:</th>
+                        <td>{{ banking_details.registration_type }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">GSTIN/UN:</th>
+                        <td>{{ banking_details.gstin_un }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            
 
             {% if address %}
-                <h3>Mailing Address</h3>
-                <ul>
-                    <li>Name: {{ address.name }}</li>
-                    <li>Address: {{ address.address }}</li>
-                    <li>Country: {{ address.country.name }}</li>
-                    <li>State: {{ address.get_state_display }}</li>
-                    <li>PIN Code: {{ address.pin }}</li>
-                </ul>
-            {% else %}
-                <p>No mailing address found.</p>
-            {% endif %}
-        </div>
+                <h3>Mailing Address</h3>                
+                <table class="table table-striped">
+                    <tbody>                        
+                       	<tr>                            
+                          	<th scope="row">Name</th>                            
+                          	<td>{{ address.name }}</td>                        
+                      	</tr>                        
+                      	<tr>                            
+                          	<th scope="row">Address</th>                            
+                          	<td>{{ address.address }}</td>                        
+                      	</tr>                        
+                      	<tr>                            
+                          	<th scope="row">Country</th>                            
+                          	<td>{{ address.country.name }}</td>                        
+                      	</tr>                        
+                      	<tr>                            
+                          	<th scope="row">State</th>                            
+                          	<td>{{ address.get_state_display }}</td>                        
+                      	</tr>                        
+                      	<tr>                            
+                          	<th scope="row">PIN Code</th>                            
+                          	<td>{{ address.pin }}</td>                        
+                      	</tr>                    
+                  	</tbody>                
+              	</table>            
+          	{% else %}                
+              	<p>No mailing address found.</p>            
+          	{% endif %}        
+      	</div>
 
-        <div class="col-md-6">
-            <h3>Banking Details</h3>
-            <ul>
-                <li>PAN/IT Number: {{ banking_details.pan_it_number }}</li>
-                <li>Registration Details: {{ banking_details.registration_details }}</li>
-                <li>GSTIN/UN: {{ banking_details.gstin_un }}</li>
-            </ul>
-
+          <div class="col-md-6">
+            
+            <h3>Bank Configuration</h3>
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <th scope="row">Set Cheque Book Range:</th>
+                        <td>{{ bank_configuration.set_cheque_book_range|yesno:"Yes,No" }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Enable Cheque Printing:</th>
+                        <td>{{ bank_configuration.enable_cheque_printing|yesno:"Yes,No" }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Set Cheque Printing Configuration:</th>
+                        <td>{{ bank_configuration.set_cheque_printing_configuration|yesno:"Yes,No" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+           
             <h3>Opening Balance</h3>
-            <ul>
-                <li>Date: {{ opening_balance.date|date:"F j, Y" }}</li>
-                <li>Amount: {{ opening_balance.amount|floatformat:2 }}</li>
-            </ul>
+<table class="table table-striped">
+    <tbody>
+        <tr>
+            <th scope="row">Date:</th>
+            <td>{{ opening_balance.date|date:"F j, Y" }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Amount:</th>
+            <td>{{ opening_balance.amount|floatformat:2 }}</td>
+        </tr>
+    </tbody>
+</table>
 
-            <!-- Add edit, activate, and deactivate options -->
-            <a href="{% url 'bank_account_holder_edit' pk=holder.pk %}" class="btn btn-primary">Edit</a>
+{% if account.is_active %}
+    <!-- Add deactivate button -->
+    <a href="{% url 'bank_account_holder_edit' pk=holder.pk %}" class="btn btn-outline-info text-grey mb-3">Edit</a>
+    <a href="{% url 'deactivate_bank_account' pk=account.pk %}" class="btn btn-outline-danger text-grey mb-3">Deactivate</a>
+{% else %}
+    <!-- Add activate button -->
+    <a href="{% url 'bank_account_holder_edit' pk=holder.pk %}" class="btn btn-outline-info text-grey mb-3">Edit</a>
+    <a href="{% url 'activate_bank_account' pk=account.pk %}" class="btn btn-outline-success text-grey mb-3">Activate</a>
+{% endif %}
 
-            {% if account.is_active %}
-                <!-- Add deactivate button -->
-                <a href="{% url 'deactivate_bank_account' pk=account.pk %}" class="btn btn-danger">Deactivate</a>
-            {% else %}
-                <!-- Add activate button -->
-                <a href="{% url 'activate_bank_account' pk=account.pk %}" class="btn btn-success">Activate</a>
-            {% endif %}
-        </div>
-    </div>
-
-    {# Add custom styles to change the font size and color of headings #}
     <style>
         h2 {
             font-size: 24px;
@@ -75,6 +141,8 @@
             font-size: 18px;
             color: #020202;
         }
+       
+        
     </style>
 </div>
 {% endblock %}

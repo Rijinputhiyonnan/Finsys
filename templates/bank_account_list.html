@@ -95,74 +95,39 @@ left: 50%; */
                          
                     </div> -->
                     
-                    <div class="col-md-4">
-                        <div class="wrap" style="width: 60%; margin-top: 8px;">
-                            <form action="{% url 'gosearch' %}" method="POST">{% csrf_token %}
-                            <div class="search">
-                                
-                               <input type="text" class="searchTerm" name="search">
-                               <button type="submit" class="searchButton">
-                                 <i class="fa fa-search"></i>
-                              </button>
-                            </div>
-                            
-                          
-                         </div>
-                         
-                    </div>
-                    <div class="col-md-4">
-                      
-                        <select class="form-control btn btn-outline-info dropdown-toggle text-grey" aria-label=".form-select-lg example" style="width: 40%; margin-top: 8px;" name="type">
-                            
-                            <option value="1" selected>All</option>
-                            <option value="2" >Name</option>
-                            <option value="3" >Active</option>
-                            <option value="4" >Inactive</option>
-                            
-                            
-                          </select>
-
-                          
-
-
-                        </form>
-                        </div>
-                        <div class="col-md-2" style="width: 40%; margin-top: 8px;">
-
-                            <div class="dropdown">
-                                <button type="button" class="btn btn-outline-info dropdown-toggle" data-toggle="dropdown">
-                                    Filter by
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="{% url 'bank_account_list' %}">All</a>
-                                    <a class="dropdown-item" href="{% url 'bank_account_list' %}?status=active">Active</a>
-                                    <a class="dropdown-item" href="{% url 'bank_account_list' %}?status=inactive">Inactive</a>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="wrap" style="width: 100%; margin-top: 8px;">
+                                    <form action="{% url 'gosearch' %}" method="POST">{% csrf_token %}
+                                        <div class="search">
+                                            <input type="text" class="searchTerm" name="search" style="background-color: #2f516f; color: white;">
+                                            <button type="submit" class="searchButton">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
-                            
-                          </div>
+                            <div class="col-md-4" style="width: 100%; margin-top: 8px;">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-outline-info dropdown-toggle" data-toggle="dropdown" style="width: 50%; font-size: 14px;">
+                                        Filter by
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="{% url 'bank_account_list' %}" style="font-size: 14px;">All</a>
+                                        <a class="dropdown-item" href="{% url 'bank_account_list' %}?status=active" style="font-size: 14px;">Active</a>
+                                        <a class="dropdown-item" href="{% url 'bank_account_list' %}?status=inactive" style="font-size: 14px;">Inactive</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="{% url 'bank_account_holder_create' %}" id="myBtn" class="btn btn-outline-info text-grey" style="margin-top: 8px; width: 50%; font-size: 14px;" role="button">New</a>
+                            </div>
                         </div>
-                        
-                        
-
-                        
-                   
-
-                    <!-- <div class="col-md-2">
-                        <a href="{% url 'goaddcust' %}" >
-                            <button >Add Customer</button>
-                        </a>
-                    </div> -->
-
-                    <div class="btn-group col-md-2">
-                        <a href="{% url 'bank_account_holder_create' %}" id="myBtn" class="btn btn-outline-info text-grey" style="margin-top: 8px;" role="button">New</a>
-                        
-                    </div>
-
-                    <div class="container">
-                        <h2>Bank Accounts</h2>
                     
-                       
+
+                   
                         <!-- Add table -->
                         <table class="table table-striped">
                             <thead>
@@ -171,21 +136,22 @@ left: 50%; */
                                     <th>Account Number</th>
                                     <th>IFSC Code</th>
                                     <th>Bank Name</th>
-                                    <th>Link</th>
+                                    <th>Branch Name</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for account in accounts %}
                                     <tr>
-                                        <td>{{ account.holder_name }}</td>
-                                        <td>{{ account.account_number }}</td>
-                                        <td>{{ account.ifsc_code }}</td>
-                                        <td>{{ account.get_bank_name_display }}</td>
-                                        <!-- Detail link -->
-                                        <td><a href="{% url 'bank_account_holder_detail' account.pk %}">View Details</a></td>
+                                        <td><a href="{% url 'bank_account_holder_detail' account.pk %}">{{ account.holder_name }}</a></td>
+                                        <td><a href="{% url 'bank_account_holder_detail' account.pk %}">{{ account.account_number }}</a></td>
+                                        <td><a href="{% url 'bank_account_holder_detail' account.pk %}">{{ account.ifsc_code }}</a></td>
+                                        <td><a href="{% url 'bank_account_holder_detail' account.pk %}">{{ account.get_bank_name_display }}</a></td>
+                                        <td><a href="{% url 'bank_account_holder_detail' account.pk %}">{{ account.branch_name }}</a></td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
+                        
+                        
                     </div>
                     {% endblock %}
