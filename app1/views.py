@@ -38388,6 +38388,7 @@ def bank_account_holder_detail(request, pk):
     }
     return render(request, 'bank_account_holder_detail.html', context)
 
+
 def bank_account_holder_edit(request, pk):
     bank_account_holder = get_object_or_404(BankAccountHolder, pk=pk)
     bank_account = get_object_or_404(BankAccount, holder_name=bank_account_holder.name)
