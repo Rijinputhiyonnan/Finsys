@@ -38504,7 +38504,7 @@ def deactivate_bank_account(request, pk):
     # Redirect to a success page
     return redirect('bank_account_holder_list')
 
-from .forms import BankAccountFilterForm
+
 
 def bank_account_list(request):
     # Handle form submission
