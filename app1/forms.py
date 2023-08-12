@@ -41,7 +41,7 @@ from .models import BankAccountHolder, BankAccount, BankConfiguration, MailingAd
 class BankAccountHolderForm(forms.ModelForm):
     class Meta:
         model = BankAccountHolder
-        fields = ['name', 'alias', 'account_type']
+        fields = ['name', 'alias', 'phone_number', 'email', 'account_type']
         widgets = {
             'account_type': forms.Select(attrs={'class': 'form-control'})
         }

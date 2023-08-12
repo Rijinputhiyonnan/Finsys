@@ -67,16 +67,19 @@
 
         <div class="row">
             <div class="col-md-6">
-                <h3>Banking Details Form</h3>
+                <h2>Tax Registration Form</h2> 
                 {% for field in banking_details_form %}
                     <div class="form-group row">
                         {% if field.field.widget.input_type == 'checkbox' %}
                             {{ field }} {{ field.label }}
                         {% else %}
-                            <label class="col-sm-4 col-form-label">{{ field.label }}</label>
+                            {% if field.name == 'gstin_un' %}
+                                <label class="col-sm-4 col-form-label" id="id_gstin_un_label">{{ field.label }}</label>
+                            {% else %}
+                                <label class="col-sm-4 col-form-label">{{ field.label }}</label>
+                            {% endif %}
                             <div class="col-sm-8">
                                 {{ field }}
-                                
                             </div>
                         {% endif %}
                     </div>
@@ -112,25 +115,31 @@
     </style>
     <!-- JavaScript code to handle the change event for the registration_type field -->
 <script>
-    // Get references to the registration type and GST number fields
-    let registrationTypeField = document.querySelector('#id_registration_type');
-    let gstNumberField = document.querySelector('#id_gstin_un');
+   // Get references to the registration type and GST number fields
+let registrationTypeField = document.querySelector('#id_registration_type');
+let gstNumberField = document.querySelector('#id_gstin_un');
 
-    // Function to hide or show the GST number field based on the selected registration type
-    function toggleGstNumberField() {
-        let registrationType = registrationTypeField.value;
-        if (registrationType === 'consumer' || registrationType === 'unregistered') {
-            gstNumberField.style.display = 'none';
-        } else {
-            gstNumberField.style.display = '';
-        }
+// Get reference to the label for the GST number field
+let gstNumberLabel = document.querySelector('#id_gstin_un_label');
+
+// Function to hide or show the GST number field and its label based on the selected registration type
+function toggleGstNumberField() {
+    let registrationType = registrationTypeField.value;
+    if (registrationType === 'consumer' || registrationType === 'unregistered') {
+        gstNumberField.style.display = 'none';
+        gstNumberLabel.style.display = 'none';
+    } else {
+        gstNumberField.style.display = '';
+        gstNumberLabel.style.display = '';
     }
+}
 
-    // Call the toggle function when the page loads
-    toggleGstNumberField();
+// Call the toggle function when the page loads
+toggleGstNumberField();
 
-    // Add an event listener to the registration type field to call the toggle function when its value changes
-    registrationTypeField.addEventListener('change', toggleGstNumberField);
+// Add an event listener to the registration type field to call the toggle function when its value changes
+registrationTypeField.addEventListener('change', toggleGstNumberField);
+
 </script>
 
 

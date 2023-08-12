@@ -1744,6 +1744,8 @@ class recurring_expense(models.Model):
 class BankAccountHolder(models.Model):
     name = models.CharField(max_length=100)
     alias = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
+    email = models.EmailField(default='example@example.com')
     ACCOUNT_TYPE_CHOICES = [
         ('CC', 'Credit Card'),
         ('BA', 'Bank Account'),
@@ -1759,7 +1761,7 @@ class BankAccountHolder(models.Model):
 class BankAccount(models.Model):
     is_active = models.BooleanField(default=True)
     holder_name = models.CharField(max_length=100)
-    account_number = models.CharField(max_length=20)
+    account_number = models.CharField(max_length=15)
     ifsc_code = models.CharField(max_length=11)
     swift_code = models.CharField(max_length=11)
     BANK_NAME_CHOICES = [
