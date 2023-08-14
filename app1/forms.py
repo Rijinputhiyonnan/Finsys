@@ -110,6 +110,16 @@ class BankingDetailsForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({'class': 'form-control'})
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        registration_type = cleaned_data.get('registration_type')
+        if registration_type in ['consumer', 'unregistered']:
+            # Skip validation for the GST number field
+            if 'gstin_un' in self.errors:
+                del self.errors['gstin_un']
+        return cleaned_data
+
                 
 class BankConfigurationForm(forms.ModelForm):
     set_cheque_book_range = forms.ChoiceField(choices=[(True, 'Yes'), (False, 'No')], widget=forms.Select)
