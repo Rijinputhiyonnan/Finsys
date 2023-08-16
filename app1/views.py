@@ -38279,32 +38279,28 @@ def account_dropdown(request):
 
 #Rijin
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from .forms import BankAccountHolderForm, BankAccountForm, BankConfigurationForm, MailingAddressForm, BankingDetailsForm, OpeningBalanceForm
+
 def bank_account_holder_create(request):
-    print('View function called')
-
     if request.method == 'POST':
-        bank_account_holder_form = BankAccountHolderForm(request.POST, prefix='bank_account_holder')
-        bank_account_form = BankAccountForm(request.POST, prefix='bank_account')
-        bank_configuration_form = BankConfigurationForm(request.POST, prefix='bank_configuration')
-        mailing_address_form = MailingAddressForm(request.POST, prefix='mailing_address')
-        banking_details_form = BankingDetailsForm(request.POST, prefix='banking_details')
-        opening_balance_form = OpeningBalanceForm(request.POST, prefix='opening_balance')
+        bank_account_holder_form = BankAccountHolderForm(request.POST)
+        bank_account_form = BankAccountForm(request.POST)
+        bank_configuration_form = BankConfigurationForm(request.POST)
+        mailing_address_form = MailingAddressForm(request.POST)
+        banking_details_form = BankingDetailsForm(request.POST)
+        opening_balance_form = OpeningBalanceForm(request.POST)
 
-        print('BankConfigurationForm errors:', bank_configuration_form.errors)
-        print('BankingDetailsForm errors:', banking_details_form.errors)
-
-        if bank_account_holder_form.is_valid():
-            bank_account_holder_form.save()
-            messages.success(request, 'Bank account holder created successfully')
+        if bank_account_holder_form.is_valid() and bank_account_form.is_valid():
+            # Save both forms
+            bank_account_holder = bank_account_holder_form.save()
+            bank_account = bank_account_form.save(commit=False)
+            bank_account.holder = bank_account_holder
+            bank_account.save()
+            messages.success(request, 'Bank account holder and bank account created successfully')
         else:
-            messages.error(request, 'Error creating bank account holder')
-
-        if bank_account_form.is_valid():
-            bank_account_form.save()
-            messages.success(request, 'Bank account created successfully')
-        else:
-            messages.error(request, 'Error creating bank account')
+            messages.error(request, 'Error creating bank account holder or bank account')
 
         if bank_configuration_form.is_valid():
             bank_configuration_form.save()
@@ -38318,7 +38314,15 @@ def bank_account_holder_create(request):
         else:
             messages.error(request, 'Error saving mailing address')
 
+        # Validate the BankingDetailsForm before accessing its cleaned_data attribute
         if banking_details_form.is_valid():
+            # Check if the registration_type field is set to consumer or unregistered
+            registration_type = banking_details_form.cleaned_data['registration_type']
+            if registration_type in ['consumer', 'unregistered']:
+                # Skip validation for the gstin_un field
+                banking_details_form.cleaned_data['gstin_un'] = ''
+                banking_details_form.errors.pop('gstin_un', None)
+
             banking_details_form.save()
             messages.success(request, 'Banking details saved successfully')
         else:
@@ -38332,12 +38336,12 @@ def bank_account_holder_create(request):
 
         return redirect('bank_account_holder_list')
     else:
-        bank_account_holder_form = BankAccountHolderForm(prefix='bank_account_holder')
-        bank_account_form = BankAccountForm(prefix='bank_account')
-        bank_configuration_form = BankConfigurationForm(prefix='bank_configuration')
-        mailing_address_form = MailingAddressForm(prefix='mailing_address')
-        banking_details_form = BankingDetailsForm(prefix='banking_details')
-        opening_balance_form = OpeningBalanceForm(prefix='opening_balance')
+        bank_account_holder_form = BankAccountHolderForm()
+        bank_account_form = BankAccountForm()
+        bank_configuration_form = BankConfigurationForm()
+        mailing_address_form = MailingAddressForm()
+        banking_details_form = BankingDetailsForm()
+        opening_balance_form = OpeningBalanceForm()
 
     context = {
         'bank_account_holder_form': bank_account_holder_form,
@@ -38348,6 +38352,7 @@ def bank_account_holder_create(request):
         'opening_balance_form': opening_balance_form,
     }
     return render(request, 'bank_account_holder_create.html', context)
+
 
 
 

@@ -128,9 +128,11 @@ function toggleGstNumberField() {
     if (registrationType === 'consumer' || registrationType === 'unregistered') {
         gstNumberField.style.display = 'none';
         gstNumberLabel.style.display = 'none';
+        gstNumberField.required = false; // Remove the required attribute
     } else {
         gstNumberField.style.display = '';
         gstNumberLabel.style.display = '';
+        gstNumberField.required = true; // Add the required attribute back
     }
 }
 
