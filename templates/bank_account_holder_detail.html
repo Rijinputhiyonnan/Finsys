@@ -37,24 +37,36 @@
                 </tbody>
             </table>
             
+<!-- Existing code in your template -->
 
-            <h3>Tax Information</h3>
-            <table class="table table-striped">
-                <tbody>
-                    <tr>
-                        <th scope="row">PAN/IT Number:</th>
-                        <td>{{ banking_details.pan_it_number }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Registration Type:</th>
-                        <td>{{ banking_details.registration_type }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">GSTIN/UN:</th>
-                        <td>{{ banking_details.gstin_un }}</td>
-                    </tr>
-                </tbody>
-            </table>
+<h3>Tax Information</h3>
+<table class="table table-striped">
+    <tbody>
+        {% if banking_details %}
+        <tr>
+            <th scope="row">PAN/IT Number:</th>
+            <td>{{ banking_details.pan_it_number }}</td> <!-- Display PAN number if it exists -->
+        </tr>
+        {% if banking_details.gstin_un %}
+        <tr>
+            <th scope="row">GSTIN/UN:</th>
+            <td>{{ banking_details.gstin_un }}</td> <!-- Display GST number if it exists -->
+        </tr>
+        {% endif %}
+        {% if banking_details.gstin_un and banking_details.registration_type not in hide_gstin_un_for %}
+        <tr>
+            <th scope="row">GST Type:</th>
+            <td>{{ banking_details.registration_type }}</td> <!-- Display GST type if GST number exists and type is not in hide_gstin_un_for -->
+        </tr>
+        {% endif %}
+        {% endif %}
+    </tbody>
+</table>
+
+<!-- Remaining code in your template -->
+
+            
+
             
 
             {% if address %}
@@ -138,14 +150,16 @@
             <h3>Opening Balance</h3>
 <table class="table table-striped">
     <tbody>
-        <tr>
-            <th scope="row">Date:</th>
-            <td>{{ opening_balance.date|date:"F j, Y" }}</td>
-        </tr>
-        <tr>
-            <th scope="row">Amount:</th>
-            <td>{{ opening_balance.amount|floatformat:2 }}</td>
-        </tr>
+        {% if opening_balance %}
+<tr>
+    <th scope="row">Date:</th>
+    <td>{{ opening_balance.date|date:"F j, Y" }}</td>
+</tr>
+<tr>
+    <th scope="row">Amount:</th>
+    <td>{{ opening_balance.amount|floatformat:2 }}</td>
+</tr>
+{% endif %}
     </tbody>
 </table>
 

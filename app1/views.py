@@ -38280,8 +38280,8 @@ def account_dropdown(request):
 #Rijin
 
 from django.shortcuts import render, redirect
-from django.contrib import messages
 from .forms import BankAccountHolderForm, BankAccountForm, BankConfigurationForm, MailingAddressForm, BankingDetailsForm, OpeningBalanceForm
+from django.contrib import messages
 
 def bank_account_holder_create(request):
     if request.method == 'POST':
@@ -38292,49 +38292,42 @@ def bank_account_holder_create(request):
         banking_details_form = BankingDetailsForm(request.POST)
         opening_balance_form = OpeningBalanceForm(request.POST)
 
-        if bank_account_holder_form.is_valid() and bank_account_form.is_valid():
-            # Save both forms
+        if (
+            bank_account_holder_form.is_valid() and
+            bank_account_form.is_valid() and
+            bank_configuration_form.is_valid() and
+            mailing_address_form.is_valid() and
+            banking_details_form.is_valid() and
+            opening_balance_form.is_valid()
+        ):
+            # Save BankAccountHolder and BankAccount instances
             bank_account_holder = bank_account_holder_form.save()
             bank_account = bank_account_form.save(commit=False)
             bank_account.holder = bank_account_holder
             bank_account.save()
-            messages.success(request, 'Bank account holder and bank account created successfully')
+
+            # Save other related information
+            bank_configuration = bank_configuration_form.save(commit=False)
+            bank_configuration.holder = bank_account_holder
+            bank_configuration.save()
+
+            mailing_address = mailing_address_form.save(commit=False)
+            mailing_address.holder = bank_account_holder
+            mailing_address.save()
+
+            banking_details = banking_details_form.save(commit=False)
+            banking_details.holder = bank_account_holder
+            banking_details.save()
+
+            opening_balance = opening_balance_form.save(commit=False)
+            opening_balance.holder = bank_account_holder
+            opening_balance.save()
+
+            messages.success(request, 'Bank account holder and related details created successfully')
+            return redirect('bank_account_holder_list')
         else:
-            messages.error(request, 'Error creating bank account holder or bank account')
+            messages.error(request, 'Error creating bank account holder or related details')
 
-        if bank_configuration_form.is_valid():
-            bank_configuration_form.save()
-            messages.success(request, 'Bank configuration saved successfully')
-        else:
-            messages.error(request, 'Error saving bank configuration')
-
-        if mailing_address_form.is_valid():
-            mailing_address_form.save()
-            messages.success(request, 'Mailing address saved successfully')
-        else:
-            messages.error(request, 'Error saving mailing address')
-
-        # Validate the BankingDetailsForm before accessing its cleaned_data attribute
-        if banking_details_form.is_valid():
-            # Check if the registration_type field is set to consumer or unregistered
-            registration_type = banking_details_form.cleaned_data['registration_type']
-            if registration_type in ['consumer', 'unregistered']:
-                # Skip validation for the gstin_un field
-                banking_details_form.cleaned_data['gstin_un'] = ''
-                banking_details_form.errors.pop('gstin_un', None)
-
-            banking_details_form.save()
-            messages.success(request, 'Banking details saved successfully')
-        else:
-            messages.error(request, 'Error saving banking details')
-
-        if opening_balance_form.is_valid():
-            opening_balance_form.save()
-            messages.success(request, 'Opening balance saved successfully')
-        else:
-            messages.error(request, 'Error saving opening balance')
-
-        return redirect('bank_account_holder_list')
     else:
         bank_account_holder_form = BankAccountHolderForm()
         bank_account_form = BankAccountForm()
@@ -38367,31 +38360,41 @@ def bank_account_holder_list(request):
 # views.py
 from django.shortcuts import render, get_object_or_404
 from .models import BankAccount, BankAccountHolder, MailingAddress, BankingDetails, OpeningBalance
-
 def bank_account_holder_detail(request, pk):
     account = get_object_or_404(BankAccount, pk=pk)
     try:
         holder = BankAccountHolder.objects.get(name=account.holder_name)
     except BankAccountHolder.DoesNotExist:
-        # handle the case where no matching BankAccountHolder object is found
-        # e.g., create a new BankAccountHolder object with a matching name
         holder = BankAccountHolder(name=account.holder_name)
         holder.save()
     addresses = MailingAddress.objects.filter(name=account.holder_name)
     if addresses:
-        address = addresses[0]  # choose one of the matching MailingAddress objects
+        address = addresses[0]
     else:
-        address = None  # handle the case where no matching MailingAddress objects are found
-    banking_details = BankingDetails.objects.first()
-    opening_balance = OpeningBalance.objects.first()
+        address = None
+
+    # Query for banking details and opening balance using holder_name
+    try:
+        banking_details = BankingDetails.objects.get(holder=holder)
+    except BankingDetails.DoesNotExist:
+        banking_details = None
+
+    try:
+        opening_balance = OpeningBalance.objects.get(holder=holder)
+    except OpeningBalance.DoesNotExist:
+        opening_balance = None
+
+    hide_gstin_un_for = ['consumer', 'unregistered']
     context = {
         'account': account,
         'holder': holder,
         'address': address,
+        'hide_gstin_un_for': hide_gstin_un_for,
         'banking_details': banking_details,
         'opening_balance': opening_balance,
     }
     return render(request, 'bank_account_holder_detail.html', context)
+
 
 
 def bank_account_holder_edit(request, pk):

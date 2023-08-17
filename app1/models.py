@@ -1,3 +1,4 @@
+
 import datetime
 from distutils.command.upload import upload
 from email.policy import default
@@ -1742,10 +1743,11 @@ class recurring_expense(models.Model):
 
 
 class BankAccountHolder(models.Model):
+    
     name = models.CharField(max_length=100)
     alias = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=20, null=True, blank=True)
-    email = models.EmailField(default='example@example.com')
+    phone_number = models.CharField(max_length=20)
+    email = models.EmailField()
     ACCOUNT_TYPE_CHOICES = [
         ('CC', 'Credit Card'),
         ('BA', 'Bank Account'),
@@ -1759,6 +1761,7 @@ class BankAccountHolder(models.Model):
     
 
 class BankAccount(models.Model):
+    holder = models.ForeignKey(BankAccountHolder, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
     holder_name = models.CharField(max_length=100)
     account_number = models.CharField(max_length=15)
@@ -1796,6 +1799,7 @@ class BankAccount(models.Model):
 
 
 class BankConfiguration(models.Model):
+    holder = models.ForeignKey(BankAccountHolder, on_delete=models.CASCADE)
     set_cheque_book_range = models.BooleanField(default=False)
     enable_cheque_printing = models.BooleanField(default=False)
     set_cheque_printing_configuration = models.BooleanField(default=False)
@@ -1804,6 +1808,7 @@ class BankConfiguration(models.Model):
 from django_countries.fields import CountryField
 
 class MailingAddress(models.Model):
+    holder = models.ForeignKey(BankAccountHolder, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     address = models.TextField()
     country = CountryField()
@@ -1848,6 +1853,7 @@ class MailingAddress(models.Model):
     pin = models.CharField(max_length=6)
 
 class BankingDetails(models.Model):
+    holder = models.ForeignKey(BankAccountHolder, on_delete=models.CASCADE)
     REGISTRATION_TYPE_CHOICES = [
         ('regular', 'Regular'),
         ('composition', 'Composition'),
@@ -1865,6 +1871,6 @@ class BankingDetails(models.Model):
 
 
 class OpeningBalance(models.Model):
+    holder = models.ForeignKey(BankAccountHolder, on_delete=models.CASCADE)
     date = models.DateField(default=datetime.date.today)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-

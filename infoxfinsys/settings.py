@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'infoxfinsys.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'finsys1',
+        'NAME': 'finsys',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
