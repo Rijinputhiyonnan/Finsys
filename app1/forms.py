@@ -38,19 +38,22 @@ from django import forms
 
 from .models import BankAccountHolder, BankAccount, BankConfiguration, MailingAddress, BankingDetails, OpeningBalance
 
+
 class BankAccountHolderForm(forms.ModelForm):
     class Meta:
         model = BankAccountHolder
-        fields = ['name', 'alias', 'phone_number', 'email', 'account_type']
+        exclude = ['holder']  # Exclude the 'holder' field from the form
+        labels = {
+            'name': 'Name',
+        }
         widgets = {
-            'account_type': forms.Select(attrs={'class': 'form-control'})
+            'account_type': forms.Select(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({'class': 'form-control'})
-
 class BankAccountForm(forms.ModelForm):
     class Meta:
         model = BankAccount
@@ -64,12 +67,13 @@ class BankAccountForm(forms.ModelForm):
         for field in self.fields.values():
             field.widget.attrs.update({'class': 'form-control'})
 
+
 class MailingAddressForm(forms.ModelForm):
     class Meta:
         model = MailingAddress
-        fields = ['name', 'address', 'country', 'state', 'pin']
+        fields = ['mailing_name', 'address', 'country', 'state', 'pin']  
         widgets = {
-            'country': forms.Select(attrs={'class': 'form-control' }),
+            'country': forms.Select(attrs={'class': 'form-control'}),
             'state': forms.Select(attrs={'class': 'form-control'}),
         }
 
@@ -77,6 +81,7 @@ class MailingAddressForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({'class': 'form-control'})
+
 
 class OpeningBalanceForm(forms.ModelForm):
     class Meta:

@@ -37,70 +37,62 @@
                 </tbody>
             </table>
             
-<!-- Existing code in your template -->
-
-<h3>Tax Information</h3>
-<table class="table table-striped">
-    <tbody>
-        {% if banking_details %}
-        <tr>
-            <th scope="row">PAN/IT Number:</th>
-            <td>{{ banking_details.pan_it_number }}</td> <!-- Display PAN number if it exists -->
-        </tr>
-        {% if banking_details.gstin_un %}
-        <tr>
-            <th scope="row">GSTIN/UN:</th>
-            <td>{{ banking_details.gstin_un }}</td> <!-- Display GST number if it exists -->
-        </tr>
-        {% endif %}
-        {% if banking_details.gstin_un and banking_details.registration_type not in hide_gstin_un_for %}
-        <tr>
-            <th scope="row">GST Type:</th>
-            <td>{{ banking_details.registration_type }}</td> <!-- Display GST type if GST number exists and type is not in hide_gstin_un_for -->
-        </tr>
-        {% endif %}
-        {% endif %}
-    </tbody>
-</table>
-
-<!-- Remaining code in your template -->
-
-            
-
-            
+            <h3>Tax Information</h3>
+            <table class="table table-striped">
+                <tbody>
+                    {% if banking_details %}
+                    <tr>
+                        <th scope="row">PAN/IT Number:</th>
+                        <td>{{ banking_details.pan_it_number }}</td>
+                    </tr>
+                    {% if banking_details.registration_type not in hide_gstin_un_for %}
+                        {% if banking_details.registration_type not in ['unregistered', 'consumer'] %}
+                        <tr>
+                            <th scope="row">GSTIN/UN:</th>
+                            <td>{{ banking_details.gstin_un }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">GST Type:</th>
+                            <td>{{ banking_details.registration_type }}</td>
+                        </tr>
+                        {% endif %}
+                    {% endif %}
+                    {% endif %}
+                </tbody>
+            </table>
 
             {% if address %}
-                <h3>Mailing Address</h3>                
-                <table class="table table-striped">
-                    <tbody>                        
-                       	<tr>                            
-                          	<th scope="row">Name</th>                            
-                          	<td>{{ address.name }}</td>                        
-                      	</tr>                        
-                      	<tr>                            
-                          	<th scope="row">Address</th>                            
-                          	<td>{{ address.address }}</td>                        
-                      	</tr>                        
-                      	<tr>                            
-                          	<th scope="row">Country</th>                            
-                          	<td>{{ address.country.name }}</td>                        
-                      	</tr>                        
-                      	<tr>                            
-                          	<th scope="row">State</th>                            
-                          	<td>{{ address.get_state_display }}</td>                        
-                      	</tr>                        
-                      	<tr>                            
-                          	<th scope="row">PIN Code</th>                            
-                          	<td>{{ address.pin }}</td>                        
-                      	</tr>                    
-                  	</tbody>                
-              	</table>            
-          	{% else %}                
-              	<p>No mailing address found.</p>            
-          	{% endif %}        
-      	</div>
-
-          <div class="col-md-6">
+            <h3>Mailing Address</h3>                
+            <table class="table table-striped">
+                <tbody>                        
+                    <tr>                            
+                        <th scope="row">Name</th>                            
+                        <td>{{ address.mailing_name }}</td>                        
+                    </tr>                        
+                    <tr>                            
+                        <th scope="row">Address</th>                            
+                        <td>{{ address.address }}</td>                        
+                    </tr>                        
+                    <tr>                            
+                        <th scope="row">Country</th>                            
+                        <td>{{ address.country }}</td>                        
+                    </tr>                        
+                    <tr>                            
+                        <th scope="row">State</th>                            
+                        <td>{{ address.get_state_display }}</td>                        
+                    </tr>                        
+                    <tr>                            
+                        <th scope="row">PIN Code</th>                            
+                        <td>{{ address.pin }}</td>                        
+                    </tr>                    
+                </tbody>                
+            </table>            
+            {% else %}
+            <p>No mailing address found.</p>            
+            {% endif %}
+        </div>
+          
+        <div class="col-md-6">
             <h3>Bank Account Holder Information</h3>
             <table class="table table-striped">
                 <tbody>
@@ -127,7 +119,6 @@
                 </tbody>
             </table>
         
-
             <h3>Bank Configuration</h3>
             <table class="table table-striped">
                 <tbody>
@@ -146,32 +137,31 @@
                 </tbody>
             </table>
             
-           
             <h3>Opening Balance</h3>
-<table class="table table-striped">
-    <tbody>
-        {% if opening_balance %}
-<tr>
-    <th scope="row">Date:</th>
-    <td>{{ opening_balance.date|date:"F j, Y" }}</td>
-</tr>
-<tr>
-    <th scope="row">Amount:</th>
-    <td>{{ opening_balance.amount|floatformat:2 }}</td>
-</tr>
-{% endif %}
-    </tbody>
-</table>
+            <table class="table table-striped">
+                <tbody>
+                    {% if opening_balance %}
+                    <tr>
+                        <th scope="row">Date:</th>
+                        <td>{{ opening_balance.date|date:"F j, Y" }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Amount:</th>
+                        <td>{{ opening_balance.amount|floatformat:2 }}</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
 
-{% if account.is_active %}
-    <!-- Add deactivate button -->
-    <a href="{% url 'bank_account_holder_edit' pk=holder.pk %}" class="btn btn-outline-info text-grey mb-3">Edit</a>
-    <a href="{% url 'deactivate_bank_account' pk=account.pk %}" class="btn btn-outline-danger text-grey mb-3">Deactivate</a>
-{% else %}
-    <!-- Add activate button -->
-    <a href="{% url 'bank_account_holder_edit' pk=holder.pk %}" class="btn btn-outline-info text-grey mb-3">Edit</a>
-    <a href="{% url 'activate_bank_account' pk=account.pk %}" class="btn btn-outline-success text-grey mb-3">Activate</a>
-{% endif %}
+            {% if account.is_active %}
+            <a href="{% url 'bank_account_holder_edit' pk=account.holder.pk %}" class="btn btn-outline-info text-grey mb-3">Edit</a>
+            <a href="{% url 'deactivate_bank_account' pk=account.pk %}" class="btn btn-outline-danger text-grey mb-3">Deactivate</a>
+            {% else %}
+            <a href="{% url 'bank_account_holder_edit' pk=account.holder.pk %}" class="btn btn-outline-info text-grey mb-3">Edit</a>
+            <a href="{% url 'activate_bank_account' pk=account.pk %}" class="btn btn-outline-success text-grey mb-3">Activate</a>
+            {% endif %}
+        </div>
+    </div>
 
     <style>
         h2 {
@@ -182,8 +172,7 @@
             font-size: 18px;
             color: #020202;
         }
-       
-        
     </style>
 </div>
 {% endblock %}
+

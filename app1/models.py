@@ -1742,28 +1742,17 @@ class recurring_expense(models.Model):
 #----------Bank holders-----------
 
 
-class BankAccountHolder(models.Model):
-    
-    name = models.CharField(max_length=100)
-    alias = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=20)
-    email = models.EmailField()
-    ACCOUNT_TYPE_CHOICES = [
-        ('CC', 'Credit Card'),
-        ('BA', 'Bank Account'),
-    ]
-    account_type = models.CharField(
-        max_length=2,
-        choices=ACCOUNT_TYPE_CHOICES,
-        default='BA',
-    )
+from django.db import models
+from django_countries.fields import CountryField
+import datetime
 
-    
+
 
 class BankAccount(models.Model):
-    holder = models.ForeignKey(BankAccountHolder, on_delete=models.CASCADE)
-    is_active = models.BooleanField(default=True)
+    
+    
     holder_name = models.CharField(max_length=100)
+    is_active = models.BooleanField(default=True)
     account_number = models.CharField(max_length=15)
     ifsc_code = models.CharField(max_length=11)
     swift_code = models.CharField(max_length=11)
@@ -1796,24 +1785,38 @@ class BankAccount(models.Model):
         choices=BANK_NAME_CHOICES,
     )
     branch_name = models.CharField(max_length=100)
-
+    def __str__(self):
+        return self.holder_name
+class BankAccountHolder(models.Model):
+    holder = models.OneToOneField(BankAccount, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    alias = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=20)
+    email = models.EmailField()
+    ACCOUNT_TYPE_CHOICES = [
+        ('CC', 'Credit Card'),
+        ('BA', 'Bank Account'),
+    ]
+    account_type = models.CharField(
+        max_length=2,
+        choices=ACCOUNT_TYPE_CHOICES,
+        default='BA',
+    )
 
 class BankConfiguration(models.Model):
-    holder = models.ForeignKey(BankAccountHolder, on_delete=models.CASCADE)
+    
+    
     set_cheque_book_range = models.BooleanField(default=False)
     enable_cheque_printing = models.BooleanField(default=False)
     set_cheque_printing_configuration = models.BooleanField(default=False)
 
-
-from django_countries.fields import CountryField
-
 class MailingAddress(models.Model):
-    holder = models.ForeignKey(BankAccountHolder, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    
+    mailing_name = models.CharField(max_length=100)
     address = models.TextField()
     country = CountryField()
     STATE_CHOICES = [
-           ('AN', 'Andaman and Nicobar Islands'),
+    ('AN', 'Andaman and Nicobar Islands'),
     ('AP', 'Andhra Pradesh'),
     ('AR', 'Arunachal Pradesh'),
     ('AS', 'Assam'),
@@ -1845,7 +1848,9 @@ class MailingAddress(models.Model):
     ('UT', 'Uttarakhand'),
     ('UP', 'Uttar Pradesh'),
     ('WB', 'West Bengal')
-    ]
+    # add more states here
+]
+
     state = models.CharField(
         max_length=2,
         choices=STATE_CHOICES,
@@ -1853,7 +1858,7 @@ class MailingAddress(models.Model):
     pin = models.CharField(max_length=6)
 
 class BankingDetails(models.Model):
-    holder = models.ForeignKey(BankAccountHolder, on_delete=models.CASCADE)
+    
     REGISTRATION_TYPE_CHOICES = [
         ('regular', 'Regular'),
         ('composition', 'Composition'),
@@ -1862,15 +1867,12 @@ class BankingDetails(models.Model):
         ('unknown', 'Unknown'),
     ]
 
-    pan_it_number = models.CharField(max_length=10)
+    pan_it_number = models.CharField(max_length=10, blank=True)
     registration_type = models.CharField(max_length=20, choices=REGISTRATION_TYPE_CHOICES, default='unknown')
-    gstin_un = models.CharField(max_length=15)
+    gstin_un = models.CharField(max_length=15, blank=True)
     set_alter_gst_details = models.BooleanField(default=False)
 
-    
-
-
 class OpeningBalance(models.Model):
-    holder = models.ForeignKey(BankAccountHolder, on_delete=models.CASCADE)
+   
     date = models.DateField(default=datetime.date.today)
     amount = models.DecimalField(max_digits=10, decimal_places=2)

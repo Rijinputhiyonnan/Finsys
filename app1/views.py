@@ -38278,12 +38278,20 @@ def account_dropdown(request):
         return JsonResponse(options)
 
 #Rijin
-
 from django.shortcuts import render, redirect
-from .forms import BankAccountHolderForm, BankAccountForm, BankConfigurationForm, MailingAddressForm, BankingDetailsForm, OpeningBalanceForm
-from django.contrib import messages
+from .forms import BankAccountHolderForm, BankAccountForm, BankConfigurationForm, MailingAddressForm, \
+    BankingDetailsForm, OpeningBalanceForm
+from .models import BankAccountHolder, BankAccount, BankConfiguration, MailingAddress, BankingDetails, OpeningBalance
+
 
 def bank_account_holder_create(request):
+    bank_account_holder_form = BankAccountHolderForm()
+    bank_account_form = BankAccountForm()
+    bank_configuration_form = BankConfigurationForm()
+    mailing_address_form = MailingAddressForm()
+    banking_details_form = BankingDetailsForm()
+    opening_balance_form = OpeningBalanceForm()
+
     if request.method == 'POST':
         bank_account_holder_form = BankAccountHolderForm(request.POST)
         bank_account_form = BankAccountForm(request.POST)
@@ -38292,59 +38300,40 @@ def bank_account_holder_create(request):
         banking_details_form = BankingDetailsForm(request.POST)
         opening_balance_form = OpeningBalanceForm(request.POST)
 
-        if (
-            bank_account_holder_form.is_valid() and
-            bank_account_form.is_valid() and
-            bank_configuration_form.is_valid() and
-            mailing_address_form.is_valid() and
-            banking_details_form.is_valid() and
-            opening_balance_form.is_valid()
-        ):
-            # Save BankAccountHolder and BankAccount instances
+        if (bank_account_holder_form.is_valid() and bank_account_form.is_valid() and
+            bank_configuration_form.is_valid() and mailing_address_form.is_valid() and
+            banking_details_form.is_valid() and opening_balance_form.is_valid()):
+
             bank_account_holder = bank_account_holder_form.save()
+
             bank_account = bank_account_form.save(commit=False)
             bank_account.holder = bank_account_holder
             bank_account.save()
 
-            # Save other related information
-            bank_configuration = bank_configuration_form.save(commit=False)
-            bank_configuration.holder = bank_account_holder
-            bank_configuration.save()
+            bank_configuration = bank_configuration_form.save()
 
-            mailing_address = mailing_address_form.save(commit=False)
-            mailing_address.holder = bank_account_holder
-            mailing_address.save()
+            mailing_address = mailing_address_form.save()
 
-            banking_details = banking_details_form.save(commit=False)
-            banking_details.holder = bank_account_holder
-            banking_details.save()
+            banking_details = banking_details_form.save()
 
-            opening_balance = opening_balance_form.save(commit=False)
-            opening_balance.holder = bank_account_holder
-            opening_balance.save()
+            opening_balance = opening_balance_form.save()
 
-            messages.success(request, 'Bank account holder and related details created successfully')
-            return redirect('bank_account_holder_list')
-        else:
-            messages.error(request, 'Error creating bank account holder or related details')
+            return redirect('bank_account_holder_list')  # Adjust the redirect URL as needed
 
-    else:
-        bank_account_holder_form = BankAccountHolderForm()
-        bank_account_form = BankAccountForm()
-        bank_configuration_form = BankConfigurationForm()
-        mailing_address_form = MailingAddressForm()
-        banking_details_form = BankingDetailsForm()
-        opening_balance_form = OpeningBalanceForm()
-
-    context = {
+    return render(request, 'bank_account_holder_create.html', {
         'bank_account_holder_form': bank_account_holder_form,
         'bank_account_form': bank_account_form,
         'bank_configuration_form': bank_configuration_form,
         'mailing_address_form': mailing_address_form,
         'banking_details_form': banking_details_form,
         'opening_balance_form': opening_balance_form,
-    }
-    return render(request, 'bank_account_holder_create.html', context)
+    })
+
+
+
+
+
+
 
 
 
@@ -38362,18 +38351,19 @@ from django.shortcuts import render, get_object_or_404
 from .models import BankAccount, BankAccountHolder, MailingAddress, BankingDetails, OpeningBalance
 def bank_account_holder_detail(request, pk):
     account = get_object_or_404(BankAccount, pk=pk)
+
     try:
         holder = BankAccountHolder.objects.get(name=account.holder_name)
     except BankAccountHolder.DoesNotExist:
         holder = BankAccountHolder(name=account.holder_name)
         holder.save()
-    addresses = MailingAddress.objects.filter(name=account.holder_name)
+
+    addresses = MailingAddress.objects.filter(holder=holder)
     if addresses:
         address = addresses[0]
     else:
         address = None
 
-    # Query for banking details and opening balance using holder_name
     try:
         banking_details = BankingDetails.objects.get(holder=holder)
     except BankingDetails.DoesNotExist:
@@ -38394,6 +38384,11 @@ def bank_account_holder_detail(request, pk):
         'opening_balance': opening_balance,
     }
     return render(request, 'bank_account_holder_detail.html', context)
+
+
+
+
+
 
 
 

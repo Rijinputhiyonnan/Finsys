@@ -113,39 +113,38 @@
 </div>
 
 
+<!-- Your existing template code -->
+
 <!-- JavaScript code to handle the change event for the registration_type field -->
 <script>
-   // Get references to the registration type and GST number fields
-let registrationTypeField = document.querySelector('#id_registration_type');
-let gstNumberField = document.querySelector('#id_gstin_un');
-
-// Get reference to the label for the GST number field
-let gstNumberLabel = document.querySelector('#id_gstin_un_label');
-
-// Function to hide or show the GST number field and its label based on the selected registration type
-function toggleGstNumberField() {
-    let registrationType = registrationTypeField.value;
-    if (registrationType === 'consumer' || registrationType === 'unregistered') {
-        gstNumberField.style.display = 'none';
-        gstNumberLabel.style.display = 'none';
-        gstNumberField.required = false; // Remove the required attribute
-    } else {
-        gstNumberField.style.display = '';
-        gstNumberLabel.style.display = '';
-        gstNumberField.required = true; // Add the required attribute back
-    }
-}
-
-// Call the toggle function when the page loads
-toggleGstNumberField();
-
-// Add an event listener to the registration type field to call the toggle function when its value changes
-registrationTypeField.addEventListener('change', toggleGstNumberField);
-
-    
-    
-</script>
-
+    // Get references to the registration type and GST number fields
+ let registrationTypeField = document.querySelector('#id_registration_type');
+ let gstNumberField = document.querySelector('#id_gstin_un');
+ 
+ // Get reference to the label for the GST number field
+ let gstNumberLabel = document.querySelector('#id_gstin_un_label');
+ 
+ // Function to hide or show the GST number field and its label based on the selected registration type
+ function toggleGstNumberField() {
+     let registrationType = registrationTypeField.value;
+     if (registrationType === 'consumer' || registrationType === 'unregistered') {
+         gstNumberField.style.display = 'none';
+         gstNumberLabel.style.display = 'none';
+         gstNumberField.required = false; // Remove the required attribute
+     } else {
+         gstNumberField.style.display = '';
+         gstNumberLabel.style.display = '';
+         gstNumberField.required = true; // Add the required attribute back
+     }
+ }
+ 
+ // Call the toggle function when the page loads
+ toggleGstNumberField();
+ 
+ // Add an event listener to the registration type field to call the toggle function when its value changes
+ registrationTypeField.addEventListener('change', toggleGstNumberField);
+ </script>
+ 
 
 
 
