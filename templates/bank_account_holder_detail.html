@@ -46,7 +46,8 @@
                         <td>{{ banking_details.pan_it_number }}</td>
                     </tr>
                     {% if banking_details.registration_type not in hide_gstin_un_for %}
-                        {% if banking_details.registration_type not in ['unregistered', 'consumer'] %}
+                    {% if banking_details.registration_type not in 'unregistered consumer' %}
+
                         <tr>
                             <th scope="row">GSTIN/UN:</th>
                             <td>{{ banking_details.gstin_un }}</td>

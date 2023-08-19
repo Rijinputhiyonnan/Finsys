@@ -42,7 +42,7 @@ from .models import BankAccountHolder, BankAccount, BankConfiguration, MailingAd
 class BankAccountHolderForm(forms.ModelForm):
     class Meta:
         model = BankAccountHolder
-        exclude = ['holder']  # Exclude the 'holder' field from the form
+        fields = ['name', 'alias', 'phone_number', 'email', 'account_type']
         labels = {
             'name': 'Name',
         }
@@ -57,6 +57,7 @@ class BankAccountHolderForm(forms.ModelForm):
 class BankAccountForm(forms.ModelForm):
     class Meta:
         model = BankAccount
+        
         fields = ['holder_name', 'account_number', 'ifsc_code', 'swift_code', 'bank_name', 'branch_name']
         widgets = {
             'bank_name': forms.Select(attrs={'class': 'form-control'}),

@@ -1746,11 +1746,30 @@ from django.db import models
 from django_countries.fields import CountryField
 import datetime
 
-
+class BankAccountHolder(models.Model):
+    name = models.CharField(max_length=100)
+    alias = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=20)
+    email = models.EmailField()
+    ACCOUNT_TYPE_CHOICES = [
+        ('CC', 'Credit Card'),
+        ('BA', 'Bank Account'),
+    ]
+    account_type = models.CharField(
+        max_length=2,
+        choices=ACCOUNT_TYPE_CHOICES,
+        default='BA',
+    )
+    
+    def __str__(self):
+        return self.name
 
 class BankAccount(models.Model):
     
+    holder = models.ForeignKey(BankAccountHolder, on_delete=models.CASCADE)
     
+    def __str__(self):
+        return f"{self.holder_name} - {self.bank_name}"
     holder_name = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
     account_number = models.CharField(max_length=15)
@@ -1787,31 +1806,17 @@ class BankAccount(models.Model):
     branch_name = models.CharField(max_length=100)
     def __str__(self):
         return self.holder_name
-class BankAccountHolder(models.Model):
-    holder = models.OneToOneField(BankAccount, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    alias = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=20)
-    email = models.EmailField()
-    ACCOUNT_TYPE_CHOICES = [
-        ('CC', 'Credit Card'),
-        ('BA', 'Bank Account'),
-    ]
-    account_type = models.CharField(
-        max_length=2,
-        choices=ACCOUNT_TYPE_CHOICES,
-        default='BA',
-    )
+
 
 class BankConfiguration(models.Model):
     
-    
+    holder = models.ForeignKey(BankAccountHolder, related_name='bank_configurations',  on_delete=models.CASCADE)
     set_cheque_book_range = models.BooleanField(default=False)
     enable_cheque_printing = models.BooleanField(default=False)
     set_cheque_printing_configuration = models.BooleanField(default=False)
 
 class MailingAddress(models.Model):
-    
+    holder = models.ForeignKey(BankAccountHolder, on_delete=models.CASCADE)
     mailing_name = models.CharField(max_length=100)
     address = models.TextField()
     country = CountryField()
@@ -1858,7 +1863,7 @@ class MailingAddress(models.Model):
     pin = models.CharField(max_length=6)
 
 class BankingDetails(models.Model):
-    
+    holder = models.ForeignKey(BankAccountHolder, on_delete=models.CASCADE)
     REGISTRATION_TYPE_CHOICES = [
         ('regular', 'Regular'),
         ('composition', 'Composition'),
@@ -1873,6 +1878,6 @@ class BankingDetails(models.Model):
     set_alter_gst_details = models.BooleanField(default=False)
 
 class OpeningBalance(models.Model):
-   
+    holder = models.ForeignKey(BankAccountHolder, on_delete=models.CASCADE)
     date = models.DateField(default=datetime.date.today)
     amount = models.DecimalField(max_digits=10, decimal_places=2)

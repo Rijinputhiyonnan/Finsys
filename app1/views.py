@@ -38279,55 +38279,71 @@ def account_dropdown(request):
 
 #Rijin
 from django.shortcuts import render, redirect
-from .forms import BankAccountHolderForm, BankAccountForm, BankConfigurationForm, MailingAddressForm, \
-    BankingDetailsForm, OpeningBalanceForm
-from .models import BankAccountHolder, BankAccount, BankConfiguration, MailingAddress, BankingDetails, OpeningBalance
-
+from .forms import BankAccountHolderForm, BankAccountForm, BankConfigurationForm, MailingAddressForm, BankingDetailsForm, OpeningBalanceForm
 
 def bank_account_holder_create(request):
-    bank_account_holder_form = BankAccountHolderForm()
-    bank_account_form = BankAccountForm()
-    bank_configuration_form = BankConfigurationForm()
-    mailing_address_form = MailingAddressForm()
-    banking_details_form = BankingDetailsForm()
-    opening_balance_form = OpeningBalanceForm()
-
     if request.method == 'POST':
-        bank_account_holder_form = BankAccountHolderForm(request.POST)
-        bank_account_form = BankAccountForm(request.POST)
-        bank_configuration_form = BankConfigurationForm(request.POST)
-        mailing_address_form = MailingAddressForm(request.POST)
-        banking_details_form = BankingDetailsForm(request.POST)
-        opening_balance_form = OpeningBalanceForm(request.POST)
+        bank_account_holder_form = BankAccountHolderForm(request.POST, prefix='holder_form')
+        bank_account_form = BankAccountForm(request.POST, prefix='account_form')
+        bank_configuration_form = BankConfigurationForm(request.POST, prefix='configuration_form')
+        mailing_address_form = MailingAddressForm(request.POST, prefix='mailing_form')
+        banking_details_form = BankingDetailsForm(request.POST, prefix='details_form')
+        opening_balance_form = OpeningBalanceForm(request.POST, prefix='balance_form')
 
-        if (bank_account_holder_form.is_valid() and bank_account_form.is_valid() and
-            bank_configuration_form.is_valid() and mailing_address_form.is_valid() and
-            banking_details_form.is_valid() and opening_balance_form.is_valid()):
-
+        if all([bank_account_holder_form.is_valid(), bank_account_form.is_valid(),
+                bank_configuration_form.is_valid(), mailing_address_form.is_valid(),
+                banking_details_form.is_valid(), opening_balance_form.is_valid()]):
+            # Save BankAccountHolder instance
             bank_account_holder = bank_account_holder_form.save()
 
+            # Save BankAccount instance
             bank_account = bank_account_form.save(commit=False)
             bank_account.holder = bank_account_holder
             bank_account.save()
 
-            bank_configuration = bank_configuration_form.save()
+            # Save BankConfiguration instance
+            bank_configuration = bank_configuration_form.save(commit=False)
+            bank_configuration.holder = bank_account_holder
+            bank_configuration.save()
 
-            mailing_address = mailing_address_form.save()
+            # Save MailingAddress instance
+            mailing_address = mailing_address_form.save(commit=False)
+            mailing_address.holder = bank_account_holder
+            mailing_address.save()
 
-            banking_details = banking_details_form.save()
+            # Save BankingDetails instance
+            banking_details = banking_details_form.save(commit=False)
+            banking_details.holder = bank_account_holder
+            banking_details.save()
 
-            opening_balance = opening_balance_form.save()
+            # Save OpeningBalance instance
+            opening_balance = opening_balance_form.save(commit=False)
+            opening_balance.holder = bank_account_holder
+            opening_balance.save()
 
-            return redirect('bank_account_holder_list')  # Adjust the redirect URL as needed
+            # Redirect to success page or any other appropriate view
+            return redirect('bank_account_holder_list')  # Replace with the appropriate URL name
 
-    return render(request, 'bank_account_holder_create.html', {
+    else:
+        bank_account_holder_form = BankAccountHolderForm(prefix='holder_form')
+        bank_account_form = BankAccountForm(prefix='account_form')
+        bank_configuration_form = BankConfigurationForm(prefix='configuration_form')
+        mailing_address_form = MailingAddressForm(prefix='mailing_form')
+        banking_details_form = BankingDetailsForm(prefix='details_form')
+        opening_balance_form = OpeningBalanceForm(prefix='balance_form')
+
+    context = {
         'bank_account_holder_form': bank_account_holder_form,
         'bank_account_form': bank_account_form,
         'bank_configuration_form': bank_configuration_form,
         'mailing_address_form': mailing_address_form,
         'banking_details_form': banking_details_form,
         'opening_balance_form': opening_balance_form,
-    })
+    }
+
+    return render(request, 'bank_account_holder_create.html', context)
+
+
 
 
 
@@ -38346,19 +38362,14 @@ def bank_account_holder_list(request):
     context = {'accounts': accounts}
     return render(request, 'bank_account_holder_list.html', context)
 
-# views.py
 from django.shortcuts import render, get_object_or_404
-from .models import BankAccount, BankAccountHolder, MailingAddress, BankingDetails, OpeningBalance
+from .models import BankAccount, BankingDetails
+
 def bank_account_holder_detail(request, pk):
     account = get_object_or_404(BankAccount, pk=pk)
 
-    try:
-        holder = BankAccountHolder.objects.get(name=account.holder_name)
-    except BankAccountHolder.DoesNotExist:
-        holder = BankAccountHolder(name=account.holder_name)
-        holder.save()
-
-    addresses = MailingAddress.objects.filter(holder=holder)
+    holder = account.holder
+    addresses = holder.mailingaddress_set.all()
     if addresses:
         address = addresses[0]
     else:
@@ -38374,7 +38385,16 @@ def bank_account_holder_detail(request, pk):
     except OpeningBalance.DoesNotExist:
         opening_balance = None
 
+    try:
+        bank_configuration = BankConfiguration.objects.get(holder=holder)
+    except BankConfiguration.DoesNotExist:
+        bank_configuration = None
+
     hide_gstin_un_for = ['consumer', 'unregistered']
+    show_gst_info = (
+        banking_details and 
+        banking_details.registration_type not in ['unregistered', 'consumer']
+    )
     context = {
         'account': account,
         'holder': holder,
@@ -38382,6 +38402,8 @@ def bank_account_holder_detail(request, pk):
         'hide_gstin_un_for': hide_gstin_un_for,
         'banking_details': banking_details,
         'opening_balance': opening_balance,
+        'bank_configuration': bank_configuration,
+        'show_gst_info': show_gst_info,
     }
     return render(request, 'bank_account_holder_detail.html', context)
 
@@ -38392,73 +38414,45 @@ def bank_account_holder_detail(request, pk):
 
 
 
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import BankAccountHolder, BankAccount, BankConfiguration, MailingAddress, BankingDetails, OpeningBalance
+from .forms import BankAccountHolderForm, BankAccountForm, BankConfigurationForm, MailingAddressForm, BankingDetailsForm, OpeningBalanceForm
+
 def bank_account_holder_edit(request, pk):
     bank_account_holder = get_object_or_404(BankAccountHolder, pk=pk)
-    bank_account = get_object_or_404(BankAccount, holder_name=bank_account_holder.name)
-    try:
-        bank_configuration = BankConfiguration.objects.get(pk=pk)
-    except BankConfiguration.DoesNotExist:
-        bank_configuration = None
-    mailing_address = MailingAddress.objects.filter(name=bank_account_holder.name).first()
-    try:
-        banking_details = BankingDetails.objects.get(pk=pk)
-    except BankingDetails.DoesNotExist:
-        banking_details = None
-    try:
-        opening_balance = OpeningBalance.objects.get(pk=pk)
-    except OpeningBalance.DoesNotExist:
-        opening_balance = None
+    bank_account = get_object_or_404(BankAccount, holder=bank_account_holder)
+    bank_configuration, _ = BankConfiguration.objects.get_or_create(holder=bank_account_holder)
+    mailing_address, _ = MailingAddress.objects.get_or_create(holder=bank_account_holder)
+    banking_details, _ = BankingDetails.objects.get_or_create(holder=bank_account_holder)
+    opening_balance, _ = OpeningBalance.objects.get_or_create(holder=bank_account_holder)
 
     if request.method == 'POST':
-        bank_account_holder_form = BankAccountHolderForm(request.POST,
-                                                         instance=bank_account_holder,
-                                                         prefix='bank_account_holder')
-        bank_account_form = BankAccountForm(request.POST,
-                                            instance=bank_account,
-                                            prefix='bank_account')
-        if bank_configuration:
-            bank_configuration_form = BankConfigurationForm(request.POST,
-                                                            instance=bank_configuration,
-                                                            prefix='bank_configuration')
-        else:
-            bank_configuration_form = BankConfigurationForm(request.POST,
-                                                            prefix='bank_configuration')
-        mailing_address_form = MailingAddressForm(request.POST,
-                                                  instance=mailing_address,
-                                                  prefix='mailing_address')
-        if banking_details:
-            banking_details_form = BankingDetailsForm(request.POST,
-                                                      instance=banking_details,
-                                                      prefix='banking_details')
-        else:
-            banking_details_form = BankingDetailsForm(request.POST,
-                                                      prefix='banking_details')
-        opening_balance_form = OpeningBalanceForm(request.POST,
-                                                  instance=opening_balance,
-                                                  prefix='opening_balance')
+        bank_account_holder_form = BankAccountHolderForm(request.POST, instance=bank_account_holder, prefix='bank_account_holder')
+        bank_account_form = BankAccountForm(request.POST, instance=bank_account, prefix='bank_account')
+        bank_configuration_form = BankConfigurationForm(request.POST, instance=bank_configuration, prefix='bank_configuration')
+        mailing_address_form = MailingAddressForm(request.POST, instance=mailing_address, prefix='mailing_address')
+        banking_details_form = BankingDetailsForm(request.POST, instance=banking_details, prefix='banking_details')
+        opening_balance_form = OpeningBalanceForm(request.POST, instance=opening_balance, prefix='opening_balance')
 
-        if (bank_account_holder_form.is_valid() and bank_account_form.is_valid() and (not bank_configuration or bank_configuration_form.is_valid()) and mailing_address_form.is_valid() and (not banking_details or banking_details_form.is_valid()) and opening_balance_form.is_valid()):
+        if (bank_account_holder_form.is_valid() and bank_account_form.is_valid() and bank_configuration_form.is_valid()
+            and mailing_address_form.is_valid() and banking_details_form.is_valid() and opening_balance_form.is_valid()):
+
             bank_account_holder_form.save()
             bank_account_form.save()
             bank_configuration_form.save()
             mailing_address_form.save()
             banking_details_form.save()
             opening_balance_form.save()
+
             messages.success(request, 'Forms updated successfully!')
             return redirect('bank_account_holder_list')
     else:
-        bank_account_holder_form = BankAccountHolderForm(instance=bank_account_holder,
-                                                         prefix='bank_account_holder')
-        bank_account_form = BankAccountForm(instance=bank_account,
-                                            prefix='bank_account')
-        bank_configuration_form = BankConfigurationForm(instance=bank_configuration,
-                                                        prefix='bank_configuration')
-        mailing_address_form = MailingAddressForm(instance=mailing_address,
-                                                  prefix='mailing_address')
-        banking_details_form = BankingDetailsForm(instance=banking_details,
-                                                  prefix='banking_details')
-        opening_balance_form = OpeningBalanceForm(instance=opening_balance,
-                                                  prefix='opening_balance')
+        bank_account_holder_form = BankAccountHolderForm(instance=bank_account_holder, prefix='bank_account_holder')
+        bank_account_form = BankAccountForm(instance=bank_account, prefix='bank_account')
+        bank_configuration_form = BankConfigurationForm(instance=bank_configuration, prefix='bank_configuration')
+        mailing_address_form = MailingAddressForm(instance=mailing_address, prefix='mailing_address')
+        banking_details_form = BankingDetailsForm(instance=banking_details, prefix='banking_details')
+        opening_balance_form = OpeningBalanceForm(instance=opening_balance, prefix='opening_balance')
 
     context = {
         'bank_account_holder': bank_account_holder,
@@ -38529,3 +38523,26 @@ def bank_account_list(request):
     context = {'accounts': accounts, 'form': form}
     return render(request, 'bank_account_list.html', context)
 
+def search_bank_account_holders(request):
+    search_term = request.GET.get('search_term', '')
+
+    if search_term:
+        account_holders = BankAccountHolder.objects.filter(
+            Q(name__icontains=search_term) |
+            Q(alias__icontains=search_term) |
+            Q(phone_number__icontains=search_term) |
+            Q(email__icontains=search_term) |
+            Q(bankaccount__holder_name__icontains=search_term) |
+            Q(bankaccount__account_number__icontains=search_term) |
+            Q(bankaccount__branch_name__icontains=search_term) |
+            Q(mailingaddress__mailing_name__icontains=search_term) |
+            Q(bankingdetails__pan_it_number__icontains=search_term) |
+            Q(bankingdetails__gstin_un__icontains=search_term) |
+            Q(openingbalance__amount__icontains=search_term)
+        ).distinct()
+
+        context = {'account_holders': account_holders, 'search_term': search_term}
+    else:
+        context = {'account_holders': None, 'search_term': search_term}
+
+    return render(request, 'bank_account_holder_list.html', context)

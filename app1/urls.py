@@ -900,4 +900,6 @@ path('search_retinvoice',views.search_retinvoice,name='search_retinvoice'),
 path('bank-account/<int:pk>/activate/', views.activate_bank_account, name='activate_bank_account'),
     path('bank-account/<int:pk>/deactivate/', views.deactivate_bank_account, name='deactivate_bank_account'),
     path('bank-accounts/', views.bank_account_list, name='bank_account_list'),
+   path('bank_account_holder/list/search_bank_account_holders/', views.search_bank_account_holders, name='search_bank_account_holders'),
+
 ]

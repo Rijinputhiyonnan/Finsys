@@ -99,9 +99,11 @@ left: 50%; */
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="wrap" style="width: 100%; margin-top: 8px;">
-                                    <form action="{% url 'gosearch' %}" method="POST">{% csrf_token %}
+                                    <form id="search-form" action="search_bank_account_holders" method="GET">
+                                        {% csrf_token %}
                                         <div class="search">
-                                            <input type="text" class="searchTerm" name="search" style="background-color: #2f516f; color: white;">
+                                            <input type="text" class="searchTerm" name="search"
+                                                   style="background-color: #2f516f; color: white;">
                                             <button type="submit" class="searchButton">
                                                 <i class="fa fa-search"></i>
                                             </button>
@@ -111,7 +113,7 @@ left: 50%; */
                             </div>
                             <div class="col-md-4" style="width: 100%; margin-top: 8px;">
                                 <div class="dropdown">
-                                    <button type="button" class="btn btn-outline-info dropdown-toggle" data-toggle="dropdown" style="width: 50%; font-size: 14px;">
+                                    <button type="button" class="btn btn-outline-info dropdown-toggle text-grey" data-toggle="dropdown" style="width: 50%; font-size: 14px;">
                                         Filter by
                                     </button>
                                     <div class="dropdown-menu">
@@ -122,12 +124,14 @@ left: 50%; */
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <a href="{% url 'bank_account_holder_create' %}" id="myBtn" class="btn btn-outline-info text-grey" style="margin-top: 8px; width: 50%; font-size: 14px;" role="button">New</a>
+                                <a href="{% url 'bank_account_holder_create' %}" id="myBtn"  class="btn btn-outline-info text-grey fa fa-plus" style="margin-top: 8px; width: 50%; font-size: 14px;" role="button">New</a>
                             </div>
                         </div>
                         
                     
-                    
+                        <div class="searchResults" id="search-results">
+                            <!-- This is where the search results will be displayed -->
+                        </div>
 
                         <table class="table table-striped">
                             <thead>
@@ -154,4 +158,22 @@ left: 50%; */
                         
                         
                     
+{% endblock %}
+{% block javascript %}
+<script>
+    const searchForm = document.getElementById('search-form');
+    const searchResults = document.getElementById('search-results');
+
+    searchForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const searchTerm = searchForm.elements['search'].value;
+
+        fetch(`/app1/bank_account_holder/list/search_bank_account_holders/?search=${searchTerm}`)
+        .then(response => response.text())
+        .then(data => {
+            searchResults.innerHTML = data;
+        });
+    
+    });
+</script>
 {% endblock %}
