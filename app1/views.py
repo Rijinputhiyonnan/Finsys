@@ -38344,26 +38344,33 @@ def bank_account_holder_create(request):
     return render(request, 'bank_account_holder_create.html', context)
 
 
-
-
-
-
-
-
-
-
-
-
-
-from django.shortcuts import render
-from .models import BankAccount, BankAccountHolder, BankConfiguration, MailingAddress, BankingDetails, OpeningBalance
 def bank_account_holder_list(request):
-    accounts = BankAccount.objects.all().distinct()
-    context = {'accounts': accounts}
+    search_query = request.GET.get('search', '')  # Get the search query from the request
+
+    # Handle form submission
+    form = BankAccountFilterForm(request.GET)
+    if form.is_valid():
+        status = form.cleaned_data.get('status')
+    else:
+        status = 'all'
+
+    # Filter bank accounts based on selected status
+    if status == 'active':
+        accounts = BankAccount.objects.filter(is_active=True)
+    elif status == 'inactive':
+        accounts = BankAccount.objects.filter(is_active=False)
+    else:
+        accounts = BankAccount.objects.all()
+
+    # Apply search query if provided
+    if search_query:
+        accounts = accounts.filter(holder_name__icontains=search_query)
+
+    # Render the template
+    context = {'accounts': accounts, 'form': form, 'search_query': search_query}
     return render(request, 'bank_account_holder_list.html', context)
 
-from django.shortcuts import render, get_object_or_404
-from .models import BankAccount, BankingDetails
+
 
 def bank_account_holder_detail(request, pk):
     account = get_object_or_404(BankAccount, pk=pk)
@@ -38409,14 +38416,6 @@ def bank_account_holder_detail(request, pk):
 
 
 
-
-
-
-
-
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import BankAccountHolder, BankAccount, BankConfiguration, MailingAddress, BankingDetails, OpeningBalance
-from .forms import BankAccountHolderForm, BankAccountForm, BankConfigurationForm, MailingAddressForm, BankingDetailsForm, OpeningBalanceForm
 
 def bank_account_holder_edit(request, pk):
     bank_account_holder = get_object_or_404(BankAccountHolder, pk=pk)
@@ -38471,14 +38470,6 @@ def bank_account_holder_edit(request, pk):
     return render(request, 'bank_account_holder_edit.html', context)
 
 
-
-
-
-
-
-from django.shortcuts import get_object_or_404
-from .models import BankAccount
-
 def activate_bank_account(request, pk):
     # Get the BankAccount object with the given primary key (pk)
     bank_account = get_object_or_404(BankAccount, pk=pk)
@@ -38523,26 +38514,31 @@ def bank_account_list(request):
     context = {'accounts': accounts, 'form': form}
     return render(request, 'bank_account_list.html', context)
 
-def search_bank_account_holders(request):
-    search_term = request.GET.get('search_term', '')
+import io
+import xlsxwriter
+from django.http import HttpResponse
 
-    if search_term:
-        account_holders = BankAccountHolder.objects.filter(
-            Q(name__icontains=search_term) |
-            Q(alias__icontains=search_term) |
-            Q(phone_number__icontains=search_term) |
-            Q(email__icontains=search_term) |
-            Q(bankaccount__holder_name__icontains=search_term) |
-            Q(bankaccount__account_number__icontains=search_term) |
-            Q(bankaccount__branch_name__icontains=search_term) |
-            Q(mailingaddress__mailing_name__icontains=search_term) |
-            Q(bankingdetails__pan_it_number__icontains=search_term) |
-            Q(bankingdetails__gstin_un__icontains=search_term) |
-            Q(openingbalance__amount__icontains=search_term)
-        ).distinct()
+def export_bank_accounts_to_excel(request):
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=bank_accounts.xlsx'
 
-        context = {'account_holders': account_holders, 'search_term': search_term}
-    else:
-        context = {'account_holders': None, 'search_term': search_term}
+    workbook = xlsxwriter.Workbook(response, {'remove_timezone': True})
+    worksheet = workbook.add_worksheet()
 
-    return render(request, 'bank_account_holder_list.html', context)
+    accounts = BankAccount.objects.all()
+
+    # Write header row
+    header = ['Holder Name', 'Account Number', 'IFSC Code', 'Bank Name', 'Branch Name']
+    for col_num, header_text in enumerate(header):
+        worksheet.write(0, col_num, header_text)
+
+    # Write data rows
+    for row_num, account in enumerate(accounts, start=1):
+        worksheet.write(row_num, 0, account.holder_name)
+        worksheet.write(row_num, 1, account.account_number)
+        worksheet.write(row_num, 2, account.ifsc_code)
+        worksheet.write(row_num, 3, account.get_bank_name_display())
+        worksheet.write(row_num, 4, account.branch_name)
+
+    workbook.close()
+    return response

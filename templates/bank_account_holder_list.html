@@ -58,6 +58,7 @@ left: 50%; */
 
 
   </style>
+  
     <div class="page-content">
         <div class="card radius-15">
             <div class="card-body">
@@ -66,7 +67,7 @@ left: 50%; */
                     <hr>
                     <div class="btn-group col-md-2" style="float: right;">
                         
-                            <a class="btn btn-outline-info text-grey" onclick="ExportToExcel('xlsx')">Export To Excel</a>
+                        <a href="{% url 'export_bank_accounts' %}" onclick="ExportToExcel('xlsx')" class="btn btn-outline-info text-grey fa fa-file-excel" style="margin-top: 8px; width: 50%; font-size: 14px;" role="button">Export To Excel</a>
                         </div>
 
                         
@@ -97,23 +98,21 @@ left: 50%; */
                     
                     <div class="container">
                         <div class="row">
+                            
                             <div class="col-md-4">
                                 <div class="wrap" style="width: 100%; margin-top: 8px;">
-                                    <form id="search-form" action="search_bank_account_holders" method="GET">
-                                        {% csrf_token %}
-                                        <div class="search">
-                                            <input type="text" class="searchTerm" name="search"
-                                                   style="background-color: #2f516f; color: white;">
-                                            <button type="submit" class="searchButton">
-                                                <i class="fa fa-search"></i>
-                                            </button>
+                                    <div class="search">
+                                        <input type="text" id="search" class="searchTerm" name="search" style="background-color: #2f516f; color: white;">
+                                        <button type="button" class="searchButton">
+                                            <i class="fa fa-search"></i>
+                                        </button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                             <div class="col-md-4" style="width: 100%; margin-top: 8px;">
                                 <div class="dropdown">
-                                    <button type="button" class="btn btn-outline-info dropdown-toggle text-grey" data-toggle="dropdown" style="width: 50%; font-size: 14px;">
+                                    <button type="button" class="btn btn-outline-info dropdown-toggle text-grey" data-toggle="dropdown" style="width: 50%; font-size: 14px; font-family: 'Your Desired Font', sans-serif;">
                                         Filter by
                                     </button>
                                     <div class="dropdown-menu">
@@ -129,11 +128,9 @@ left: 50%; */
                         </div>
                         
                     
-                        <div class="searchResults" id="search-results">
-                            <!-- This is where the search results will be displayed -->
-                        </div>
-
-                        <table class="table table-striped">
+                    
+                        <div class="table-responsive">
+                        <table class="table table-striped" >
                             <thead>
                                 <tr>
                                     <th>Holder Name</th>
@@ -143,7 +140,7 @@ left: 50%; */
                                     <th>Branch Name</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="search-results-table">
                                 {% for account in accounts %}
                                     <tr>
                                         <td><a href="{% url 'bank_account_holder_detail' account.pk %}">{{ account.holder_name }}</a></td>
@@ -157,23 +154,27 @@ left: 50%; */
                         </table>
                         
                         
-                    
-{% endblock %}
-{% block javascript %}
-<script>
-    const searchForm = document.getElementById('search-form');
-    const searchResults = document.getElementById('search-results');
 
-    searchForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const searchTerm = searchForm.elements['search'].value;
-
-        fetch(`/app1/bank_account_holder/list/search_bank_account_holders/?search=${searchTerm}`)
-        .then(response => response.text())
-        .then(data => {
-            searchResults.innerHTML = data;
-        });
-    
-    });
-</script>
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                        <script>
+                            $(document).ready(function() {
+                                var $rows = $('#search-results-table tr'); // Select all rows within the tbody
+                                $('#search').keyup(function() {
+                                    var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+                                    $rows.show().filter(function() {
+                                        var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                                        return !~text.indexOf(val);
+                                    }).hide();
+                                });
+                            });
+                        </script>
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                        <script>
+                            function ExportToExcel(type) {
+                                var elt = document.getElementById('tbl_exporttable_to_xls');
+                                var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
+                                var blob = new Blob([XLSX.write(wb, { bookType: type, bookSST: true, type: 'binary' })], { type: "application/octet-stream" });
+                                saveAs(blob, "ExportedData." + type);
+                            }
+                        </script>
 {% endblock %}
