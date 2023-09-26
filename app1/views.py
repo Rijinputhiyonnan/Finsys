@@ -38488,7 +38488,7 @@ def activate_bank_account(request, pk):
     bank_account.save()
 
     # Redirect to a success page
-    return redirect('bank_account_holder_list')
+    return redirect('bank_account_holder_detail', pk=pk)
 
 def deactivate_bank_account(request, pk):
     # Get the BankAccount object with the given primary key (pk)
@@ -38499,7 +38499,7 @@ def deactivate_bank_account(request, pk):
     bank_account.save()
 
     # Redirect to a success page
-    return redirect('bank_account_holder_list')
+    return redirect('bank_account_holder_detail', pk=pk)
 
 from .forms import BankAccountFilterForm
 

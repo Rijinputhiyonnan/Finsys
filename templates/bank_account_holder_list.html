@@ -98,36 +98,33 @@ left: 50%; */
                     
                     <div class="container">
                         <div class="row">
-                            
                             <div class="col-md-4">
-                                <div class="wrap" >
+                                <div class="wrap">
                                     <div class="search">
-                                        <input type="text" id="search" class="searchTerm" name="search" style="background-color: #2f516f; color: white; width: 25vh;">
-
-                                        <button type="button" class="searchButton">
-                                            <i class="fa fa-search"></i>
-                                        </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                            <div class="col-md-4" style="text-align: center;">
-                                <div class="dropdown">
-                                    <button type="button" class="btn btn-outline-info dropdown-toggle text-grey" data-toggle="dropdown" style="width: 50%; font-size: 14px; display: inline-block;">
-                                        <i class="fa fa-filter"></i>Filter by
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <a class="dropdown-item" href="{% url 'bank_account_list' %}" style="font-size: 14px;">All</a>
-                                        <a class="dropdown-item" href="{% url 'bank_account_list' %}?status=active" style="font-size: 14px;">Active</a>
-                                        <a class="dropdown-item" href="{% url 'bank_account_list' %}?status=inactive" style="font-size: 14px;">Inactive</a>
+                                        <input type="text" id="search" class="form-control" placeholder="Search.." style="width: 60vh;" autocomplete="off">
+                                        <center><i class="fa fa-search form-control" style="width: 6vh;"></i></center>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <a href="{% url 'bank_account_holder_create' %}" id="myBtn"  class="btn btn-outline-info text-grey fa fa-plus" style=" width: 50%; font-size: 14px; float: right;" role="button">New</a>
+                            <div class="col-md-8">
+                                <div class="text-right"> <!-- Adjusted class to text-right -->
+                                    <div class="dropdown" style="display: inline-block;">
+                                        <button type="button" class="btn btn-outline-info dropdown-toggle text-grey" data-toggle="dropdown" style="width: 100%; font-size: 14px;">
+                                            <i class="fa fa-filter"></i> Filter by
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" href="{% url 'bank_account_list' %}" style="font-size: 14px;">All</a>
+                                            <a class="dropdown-item" href="{% url 'bank_account_list' %}?status=active" style="font-size: 14px;">Active</a>
+                                            <a class="dropdown-item" href="{% url 'bank_account_list' %}?status=inactive" style="font-size: 14px;">Inactive</a>
+                                        </div>
+                                    </div>
+                                    <a href="{% url 'bank_account_holder_create' %}" id="myBtn" class="btn btn-outline-info text-grey fa fa-plus" style="width: 10%; font-size: 14px; margin-left: 10px;" role="button">New</a>
+                                </div>
                             </div>
                         </div>
                         
+                        
+
                     
                     
                         <div class="table-responsive">
