@@ -100,9 +100,10 @@ left: 50%; */
                         <div class="row">
                             
                             <div class="col-md-4">
-                                <div class="wrap" style="width: 100%; margin-top: 8px;">
+                                <div class="wrap" >
                                     <div class="search">
-                                        <input type="text" id="search" class="searchTerm" name="search" style="background-color: #2f516f; color: white;">
+                                        <input type="text" id="search" class="searchTerm" name="search" style="background-color: #2f516f; color: white; width: 25vh;">
+
                                         <button type="button" class="searchButton">
                                             <i class="fa fa-search"></i>
                                         </button>
@@ -110,10 +111,10 @@ left: 50%; */
                                     </form>
                                 </div>
                             </div>
-                            <div class="col-md-4" style="width: 100%; margin-top: 8px;">
+                            <div class="col-md-4" style="text-align: center;">
                                 <div class="dropdown">
-                                    <button type="button" class="btn btn-outline-info dropdown-toggle text-grey" data-toggle="dropdown" style="width: 50%; font-size: 14px; font-family: 'Your Desired Font', sans-serif;">
-                                        Filter by
+                                    <button type="button" class="btn btn-outline-info dropdown-toggle text-grey" data-toggle="dropdown" style="width: 50%; font-size: 14px; display: inline-block;">
+                                        <i class="fa fa-filter"></i>Filter by
                                     </button>
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href="{% url 'bank_account_list' %}" style="font-size: 14px;">All</a>
@@ -123,7 +124,7 @@ left: 50%; */
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <a href="{% url 'bank_account_holder_create' %}" id="myBtn"  class="btn btn-outline-info text-grey fa fa-plus" style="margin-top: 8px; width: 50%; font-size: 14px;" role="button">New</a>
+                                <a href="{% url 'bank_account_holder_create' %}" id="myBtn"  class="btn btn-outline-info text-grey fa fa-plus" style=" width: 50%; font-size: 14px; float: right;" role="button">New</a>
                             </div>
                         </div>
                         

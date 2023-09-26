@@ -66,7 +66,7 @@ left: 50%; */
                     <hr>
                     <div class="btn-group col-md-2" style="float: right;">
                         
-                            <a class="btn btn-outline-info text-grey" onclick="ExportToExcel('xlsx')">Export To Excel</a>
+                        <a href="{% url 'export_bank_accounts' %}" onclick="ExportToExcel('xlsx')" class="btn btn-outline-info text-grey fa fa-file-excel" style="margin-top: 8px; width: 50%; font-size: 14px;" role="button">Export To Excel</a>
                         </div>
 
                         
@@ -98,21 +98,21 @@ left: 50%; */
                     <div class="container">
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="wrap" style="width: 100%; margin-top: 8px;">
-                                    <form action="{% url 'gosearch' %}" method="POST">{% csrf_token %}
-                                        <div class="search">
-                                            <input type="text" class="searchTerm" name="search" style="background-color: #2f516f; color: white;">
-                                            <button type="submit" class="searchButton">
-                                                <i class="fa fa-search"></i>
-                                            </button>
+                                <div class="wrap" >
+                                    <div class="search">
+                                        <input type="text" id="search" class="searchTerm" name="search" style="background-color: #2f516f; color: white; width: 25vh;">
+
+                                        <button type="button" class="searchButton">
+                                            <i class="fa fa-search"></i>
+                                        </button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
-                            <div class="col-md-4" style="width: 100%; margin-top: 8px;">
+                            <div class="col-md-4" style="text-align: center;">
                                 <div class="dropdown">
-                                    <button type="button" class="btn btn-outline-info dropdown-toggle" data-toggle="dropdown" style="width: 50%; font-size: 14px;">
-                                        Filter by
+                                    <button type="button" class="btn btn-outline-info dropdown-toggle text-grey" data-toggle="dropdown" style="width: 50%; font-size: 14px; display: inline-block;">
+                                        <i class="fa fa-filter"></i>Filter by
                                     </button>
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href="{% url 'bank_account_list' %}" style="font-size: 14px;">All</a>
@@ -121,10 +121,11 @@ left: 50%; */
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <a href="{% url 'bank_account_holder_create' %}" id="myBtn"  class="btn btn-outline-info text-grey fa fa-plus" style="margin-top: 8px; width: 50%; font-size: 14px;" role="button">New</a>
+                            <div class="col-md-4 ml-5vh">
+                                <a href="{% url 'bank_account_holder_create' %}" id="myBtn"  class="btn btn-outline-info text-grey fa fa-plus" style=" width: 50%; font-size: 14px; float: right;" role="button">New</a>
                             </div>
                         </div>
+                        
                     
 
                    
@@ -154,4 +155,30 @@ left: 50%; */
                         
                         
                     </div>
+
+
+
+                    
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script>
+                        $(document).ready(function() {
+                            var $rows = $('#search-results-table tr'); // Select all rows within the tbody
+                            $('#search').keyup(function() {
+                                var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+                                $rows.show().filter(function() {
+                                    var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                                    return !~text.indexOf(val);
+                                }).hide();
+                            });
+                        });
+                    </script>
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script>
+                        function ExportToExcel(type) {
+                            var elt = document.getElementById('tbl_exporttable_to_xls');
+                            var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
+                            var blob = new Blob([XLSX.write(wb, { bookType: type, bookSST: true, type: 'binary' })], { type: "application/octet-stream" });
+                            saveAs(blob, "ExportedData." + type);
+                        }
+                    </script>
                     {% endblock %}

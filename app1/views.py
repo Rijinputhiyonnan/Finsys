@@ -38331,6 +38331,8 @@ def bank_account_holder_create(request):
         mailing_address_form = MailingAddressForm(prefix='mailing_form')
         banking_details_form = BankingDetailsForm(prefix='details_form')
         opening_balance_form = OpeningBalanceForm(prefix='balance_form')
+    
+    cmp1 = company.objects.get(id=request.session["uid"])
 
     context = {
         'bank_account_holder_form': bank_account_holder_form,
@@ -38339,6 +38341,7 @@ def bank_account_holder_create(request):
         'mailing_address_form': mailing_address_form,
         'banking_details_form': banking_details_form,
         'opening_balance_form': opening_balance_form,
+        'cmp1': cmp1,
     }
 
     return render(request, 'bank_account_holder_create.html', context)
@@ -38367,7 +38370,8 @@ def bank_account_holder_list(request):
         accounts = accounts.filter(holder_name__icontains=search_query)
 
     # Render the template
-    context = {'accounts': accounts, 'form': form, 'search_query': search_query}
+    cmp1 = company.objects.get(id=request.session["uid"])
+    context = {'accounts': accounts, 'form': form, 'search_query': search_query, 'cmp1': cmp1,}
     return render(request, 'bank_account_holder_list.html', context)
 
 
@@ -38402,6 +38406,7 @@ def bank_account_holder_detail(request, pk):
         banking_details and 
         banking_details.registration_type not in ['unregistered', 'consumer']
     )
+    cmp1 = company.objects.get(id=request.session["uid"])
     context = {
         'account': account,
         'holder': holder,
@@ -38411,6 +38416,7 @@ def bank_account_holder_detail(request, pk):
         'opening_balance': opening_balance,
         'bank_configuration': bank_configuration,
         'show_gst_info': show_gst_info,
+        'cmp1': cmp1,
     }
     return render(request, 'bank_account_holder_detail.html', context)
 
@@ -38452,6 +38458,8 @@ def bank_account_holder_edit(request, pk):
         mailing_address_form = MailingAddressForm(instance=mailing_address, prefix='mailing_address')
         banking_details_form = BankingDetailsForm(instance=banking_details, prefix='banking_details')
         opening_balance_form = OpeningBalanceForm(instance=opening_balance, prefix='opening_balance')
+        
+    cmp1 = company.objects.get(id=request.session["uid"])
 
     context = {
         'bank_account_holder': bank_account_holder,
@@ -38466,6 +38474,7 @@ def bank_account_holder_edit(request, pk):
         'opening_balance_form': opening_balance_form,
         'banking_details_form': banking_details_form,
         'bank_configuration_form': bank_configuration_form,
+        'cmp1': cmp1,
     }
     return render(request, 'bank_account_holder_edit.html', context)
 
@@ -38509,9 +38518,11 @@ def bank_account_list(request):
         accounts = BankAccount.objects.filter(is_active=False)
     else:
         accounts = BankAccount.objects.all()
+    
+    cmp1 = company.objects.get(id=request.session["uid"])
 
     # Render the template
-    context = {'accounts': accounts, 'form': form}
+    context = {'accounts': accounts, 'form': form, 'cmp1': cmp1,}
     return render(request, 'bank_account_list.html', context)
 
 import io
