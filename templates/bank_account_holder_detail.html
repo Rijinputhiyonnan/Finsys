@@ -172,9 +172,9 @@
                                         Edit
                                     </a>&nbsp;&nbsp;&nbsp;
                                     {% if account.is_active %}
-                                    <a href="{% url 'deactivate_bank_account' pk=account.pk  %}" class=" btn btn-outline-info rounded-pill text-grey mt-3 mb-3" role="button">Inactivate</a> &nbsp;&nbsp;&nbsp;
+                                    <a href="{% url 'deactivate_bank_account' pk=account.pk  %}" class=" btn btn-outline-info rounded-pill text-grey mt-3 mb-3" role="button">Activate</a> &nbsp;&nbsp;&nbsp;
                                     {% else %}
-                                    <a href="{% url 'activate_bank_account' pk=account.pk %}" class=" btn btn-outline-info rounded-pill text-grey mt-3 mb-3" role="button">Activate</a> &nbsp;&nbsp;&nbsp;
+                                    <a href="{% url 'activate_bank_account' pk=account.pk %}" class=" btn btn-outline-info rounded-pill text-grey mt-3 mb-3" role="button">Inactivate</a> &nbsp;&nbsp;&nbsp;
                                     {% endif %}
                                    
                             
@@ -321,40 +321,60 @@
                     <div class="col-lg-6 bg-grey">
                         <div class="p-5">
                           
-                            <h4 class="fw-bold mb-5 mt-2 pt-1" style="border-bottom: 1px solid rgba(128, 128, 128, 0.6); width: fit-content;">Bank Account Holder Information</h4>
-                            
-                            <div class="d-flex justify-content-between mb-4">
-                                <h6 class="">Name</h6>
-                                <h6>{{ holder.name }}</h6>
+                            <h5 class="fw-bold mb-5 mt-2 pt-1" style="border-bottom: 1px solid rgba(128, 128, 128, 0.6); width: fit-content;">Bank Account Holder Information</h5>
+                            <div class="row mb-4 d-flex justify-content-between align-items-center">
+                            <div class="col-md-2 mt-3">
+                                <h7 class="mb-0">Name</h7>
                             </div>
-                            <div class="d-flex justify-content-between mb-4">
-                            <h6 class="">Alias</h6>
-                            
-                            <h6>  {{ holder.alias }}</h6>
+                            <div class="col-md-4 mt-3">
+                                <p class="mb-0">{{ holder.name }}</p>
                             </div>
-                            <div class="d-flex justify-content-between mb-4">
-                                <h6 class="">Phone Number</h6>
-                                <h6>{{ holder.phone_number }}</h6>
+                            <div class="col-md-2 mt-3 vl">
+                                <h7 class="mb-0">Alias</h7>
                             </div>
-                            <div class="d-flex justify-content-between mb-4">
-                                <h6 class="">Email</h6>
-                                <h6>{{ holder.email }}</h6>
-                            </div> <div class="d-flex justify-content-between mb-4">
-                                <h6 class="">Account Type</h6>
-                                <h6>{{holder.get_account_type_display }}</h6>
+                            <div class="col-md-4 mt-3">
+                                <p class="mb-0">{{ holder.alias  }}</p>
                             </div>
-                            <div class="d-flex justify-content-between mb-4">
-                                <h6 class="">Status</h6>
-                                <h6>{% if account.is_active %}
-                                    <h6 >Active</h6>
-                                    {% else %}
-                                    <h6 >Inactive</h6>
-                                    {% endif %}</h6>
+                        </div>
+                        <div class="row mb-4 d-flex justify-content-between align-items-center">
+                            <div class="col-md-2 mt-3">
+                                <h7 class="mb-0">Phone Number</h7>
                             </div>
+                            <div class="col-md-4 mt-3">
+                                <p class="mb-0">{{ holder.phone_number  }}</p>
+                            </div>
+                            <div class="col-md-2 mt-3 vl">
+                                <h7 class="mb-0">Email</h7>
+                            </div>
+                            <div class="col-md-4 mt-3">
+                                <p class="mb-0">{{  holder.email }}</p>
+                            </div>
+                        </div>
 
+                        <div class="row mb-4 d-flex justify-content-between align-items-center">
+                            <div class="col-md-2 mt-3">
+                                <h7 class="mb-0">Account Type</h7>
+                            </div>
+                            <div class="col-md-4 mt-3">
+                                <p class="mb-0">{{ holder.get_account_type_display}}</p>
+                            </div>
+                            <div class="col-md-2 mt-3 vl">
+                                <h7 class="mb-0">Status</h7>
+                            </div>
+                            <div class="col-md-4 mt-3">
+                                {% if account.is_active %}
+                                <p class="mb-0">Active</p>
+                                {% else %}
+                                <p class="mb-0">Inactive</p>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex justify-content-between mb-4">
+                               
+                            </div>
+                        </div>
                             {% if address %}
                             <hr class="my-4">
-                            <h4 class="fw-bold mb-5 mt-2 pt-1" style="border-bottom: 1px solid rgba(128, 128, 128, 0.6); width: fit-content;">Mailing Address</h4>
+                            <h5 class="fw-bold mb-5 mt-2 pt-1" style="border-bottom: 1px solid rgba(128, 128, 128, 0.6); width: fit-content;">Mailing Address</h5>
                             
                             <div class="d-flex justify-content-between mb-4">
                                 <h6 class="">Name</h6>
@@ -390,7 +410,7 @@
                                 <div class="col-md-4 mt-3"></div>
                                 <div class="col-md-4 mt-3"></div>
 
-                                <div class="col-md-2 mt-3 vl">
+                                <div class="col-md-2 mt-3">
                                     <h7 class="mb-0">Amount:</h7>
                                 </div>
                                 <div class="col-md-4 mt-3">

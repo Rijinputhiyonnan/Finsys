@@ -58,6 +58,7 @@ left: 50%; */
 
 
   </style>
+  
     <div class="page-content">
         <div class="card radius-15">
             <div class="card-body">
@@ -108,7 +109,7 @@ left: 50%; */
                             <div class="col-md-8">
                                 <div class="text-right"> <!-- Adjusted class to text-right -->
                                     <div class="dropdown" style="display: inline-block;">
-                                        <button type="button" class="btn btn-outline-info dropdown-toggle text-grey" data-toggle="dropdown" style="width: 100%; font-size: 14px;">
+                                        <button type="button" class="btn btn-outline-info dropdown-toggle text-grey" data-toggle="dropdown" style="width: 100%; font-size: 12px;">
                                             <i class="fa fa-filter"></i> Filter by
                                         </button>
                                         <div class="dropdown-menu">
@@ -121,11 +122,13 @@ left: 50%; */
                                 </div>
                             </div>
                         </div>
-                    
+                        
+                        
 
-                   
-                        <!-- Add table -->
-                        <table class="table table-striped">
+                    
+                    
+                        <div class="table-responsive">
+                        <table class="table table-striped" >
                             <thead>
                                 <tr>
                                     <th>Holder Name</th>
@@ -135,7 +138,7 @@ left: 50%; */
                                     <th>Branch Name</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="search-results-table">
                                 {% for account in accounts %}
                                     <tr>
                                         <td><a href="{% url 'bank_account_holder_detail' account.pk %}">{{ account.holder_name }}</a></td>
@@ -149,31 +152,27 @@ left: 50%; */
                         </table>
                         
                         
-                    </div>
 
-
-
-                    
-                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                    <script>
-                        $(document).ready(function() {
-                            var $rows = $('#search-results-table tr'); // Select all rows within the tbody
-                            $('#search').keyup(function() {
-                                var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
-                                $rows.show().filter(function() {
-                                    var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
-                                    return !~text.indexOf(val);
-                                }).hide();
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                        <script>
+                            $(document).ready(function() {
+                                var $rows = $('#search-results-table tr'); // Select all rows within the tbody
+                                $('#search').keyup(function() {
+                                    var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+                                    $rows.show().filter(function() {
+                                        var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                                        return !~text.indexOf(val);
+                                    }).hide();
+                                });
                             });
-                        });
-                    </script>
-                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                    <script>
-                        function ExportToExcel(type) {
-                            var elt = document.getElementById('tbl_exporttable_to_xls');
-                            var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
-                            var blob = new Blob([XLSX.write(wb, { bookType: type, bookSST: true, type: 'binary' })], { type: "application/octet-stream" });
-                            saveAs(blob, "ExportedData." + type);
-                        }
-                    </script>
-                    {% endblock %}
+                        </script>
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                        <script>
+                            function ExportToExcel(type) {
+                                var elt = document.getElementById('tbl_exporttable_to_xls');
+                                var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
+                                var blob = new Blob([XLSX.write(wb, { bookType: type, bookSST: true, type: 'binary' })], { type: "application/octet-stream" });
+                                saveAs(blob, "ExportedData." + type);
+                            }
+                        </script>
+{% endblock %}
